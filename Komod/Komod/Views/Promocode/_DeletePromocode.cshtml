@@ -1,0 +1,13 @@
+﻿@model PromocodeViewModel
+@using Komod.Web.Models.PromocodeModels
+@using Komod.Web.Models
+
+<form asp-action="DeletePromocode" role="form">
+    @Html.Partial("_ModalHeader", new ModalHeader { Heading = "Удаление промокода" })
+
+    <div class="modal-body">
+        <input asp-for="Id" />
+        Вы уверены, что хотите удалить @Model.PromocodeName?
+    </div>
+    @Html.Partial("_ModalFooter", new ModalFooter { SubmitButtonText = "Удалить" })
+</form>

@@ -1,0 +1,156 @@
+﻿@model PromocodeArticleModel
+@using Komod.Web.Models.PromocodeModels
+@using Komod.Web.Models
+
+@{
+    ViewData["Title"] = "Добавление товара" + Model.PromocodeName + "";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@*<form asp-action="AddArticleToProduct" role="form">
+    @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Добавить товары к промокоду" })
+    <div class="modal-body form-horizontal">
+        <div class="row">
+            <div class="col-12">
+                <input asp-for="PromocodeId" type="hidden" />
+
+                <ul>
+                    @foreach (var c1 in Model.Categories.Where(c1 => c1.ParentId == null))
+                    {
+                        <li>
+                            <input type="checkbox" class="promocode-checkbox">
+                            <label class="custom-unchecked">@c1.Name</label>
+                            <ul>
+                                @foreach (var c2 in Model.Categories.Where(c2 => c2.ParentId == c1.Id))
+                                {
+                                    <li>
+                                        <input type="checkbox" class="promocode-checkbox">
+                                        <label class="custom-unchecked">@c2.Name</label>
+                                        <ul>
+                                            @foreach (var p in Model.Products.Where(p => p.CategoryId == c2.Id))
+                                            {
+                                                <li>
+                                                    <input type="checkbox" class="promocode-checkbox">
+                                                    <label class="custom-unchecked">@p.Name</label>
+                                                    <ul>
+                                                        @foreach (var a in Model.Articles.Where(a => a.ProductId == p.Id))
+                                                        {
+                                                            <li>
+                                                                @if (Model.ArticleIds.Contains(a.Id))
+                                                                {
+                                                                    <input type="checkbox" class="promocode-checkbox" name="articleIds" value="@a.Id" checked>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <input type="checkbox" class="promocode-checkbox" name="articleIds" value="@a.Id">
+                                                                }
+                                                                <label class="custom-unchecked">@a.Name</label>
+                                                            </li>
+                                                        }
+                                                    </ul>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </li>
+                                }@foreach (var p in Model.Products.Where(p => p.CategoryId == c1.Id))
+                                {
+                                    <li>
+                                        <input type="checkbox" class="promocode-checkbox">
+                                        <label class="custom-unchecked">@p.Name</label>
+                                        <ul>
+                                            @foreach (var a in Model.Articles.Where(a => a.ProductId == p.Id))
+                                            {
+                                                <li>
+                                                    @if (Model.ArticleIds.Contains(a.Id))
+                                                    {
+                                                        <input type="checkbox" class="promocode-checkbox" name="articleIds" value="@a.Id" checked>
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="checkbox" class="promocode-checkbox" name="articleIds" value="@a.Id">
+                                                    }
+                                                    <label class="custom-unchecked">@a.Name</label>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </li>
+                                }
+                            </ul>
+                        </li>
+                    }
+                </ul>
+
+
+            </div>
+        </div>
+    </div>
+    @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
+</form>*@
+
+
+<div class="container-fluid">
+    <div class="fade-in">
+        <div class="row">
+            <div class="col-lg-12">
+                <form asp-action="AddArticleToProduct" role="form">
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <h1>Добавить промокод @Model.PromocodeName к товарам</h1>
+                            <a href="@ViewBag.ReturnUrl" class="btn btn-ghost-info btn-pill">Вернуться к промокодам</a>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-lg-12">
+                                    <div id="mainAccordion" data-children=".item-main">
+                                        @foreach (var c1 in Model.Categories.Where(c1 => c1.ParentId == null))
+                                        {
+                                            <div class="item item-main">
+                                                <h3 class="d-flex justify-content-start align-items-center">
+                                                    <a data-toggle="collapse" data-parent="#mainAccordion" href="#accordion-category-@c1.Id" aria-expanded="true" aria-controls="accordion-category-@c1.Id">
+                                                        @c1.Name
+                                                    </a>
+                                                    <label class="c-switch c-switch-pill c-switch-primary ml-2">
+                                                        <input class="c-switch-input" type="checkbox">
+                                                        <span class="c-switch-slider"></span>
+                                                    </label>
+                                                </h3>
+                                                <div class="collapse" id="accordion-category-@c1.Id" role="tabpanel">
+                                                    <div id="accordion-category-@c1.Id" data-children=".item-category-@c1.Id" class="ml-2">
+
+                                                        @foreach (var c2 in Model.Categories.Where(c2 => c2.ParentId == c1.Id))
+                                                        {
+                                                            <div class="item item-category-@c1.Id">
+                                                                <h3>
+                                                                    <a data-toggle="collapse" data-parent="#accordion-category-@c1.Id" href="#accordion-category-@c2.Id" aria-expanded="true" aria-controls="accordion-category-@c2.Id">
+                                                                        @c2.Name
+                                                                    </a>
+                                                                </h3>
+                                                                <div class="collapse" id="accordion-category-@c2.Id" role="tabpanel">
+                                                                    <p>ХУЙ</p>
+                                                                </div>
+                                                            </div>
+                                                            <hr />
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr />
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-success">Сохранить</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script></script>
+}

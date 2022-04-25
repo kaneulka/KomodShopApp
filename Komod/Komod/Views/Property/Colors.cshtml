@@ -1,0 +1,84 @@
+﻿@model IEnumerable<ColorViewModel>
+@using Komod.Web.Models.ProductModels
+@using Komod.Web.Code
+@using Komod.Web.Models
+@{
+    ViewData["Title"] = "Цвета";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="fade-in">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <h1>Цвета</h1>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-lg-2">
+                                <a id="createColorModal" data-toggle="modal" href="#" data-target="#modal-action-color" class="btn btn-pill btn-block btn-primary">
+                                    Добавить цвет
+                                </a>
+                            </div>
+                        </div>
+                        <table class="table table-responsive-sm table-bordered table-striped table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Название</th>
+                                    <th>Код</th>
+                                    <th>Дата добавления</th>
+                                    <th>Дата изменения</th>
+                                    <th>Действие</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var i in Model)
+                                {
+                                    <tr>
+                                        <td>@i.Name</td>
+                                        <td style="background:@i.ColorCode;">@i.ColorCode</td>
+                                        <td>@i.AddedDate</td>
+                                        <td>@i.ModifiedDate</td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
+                                                <a data-toggle="modal" href="#" data-id="@i.Id" data-target="#modal-action-color" class="btn btn-dark editColorModal">
+                                                    <i class="c-icon cil-pencil"></i>
+                                                </a>
+                                                <a class="btn btn-danger" href="javascript:{}" onclick="document.getElementById('deleteFormSuccess-@i.Id').submit(); return false;">
+                                                    <i class="c-icon cil-trash"></i>
+                                                </a>
+                                            </div>
+                                            <form asp-action="DeleteColor" asp-controller="Property" method="post" id="deleteFormSuccess-@i.Id" asp-route-Id="@i.Id" asp-route-returnurl="@ViewBag.ReturnUrl" style="display:none">
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-color", AreaLabeledId = "modal-action-color-label", Size = ModalSize.Large })
+
+@section scripts
+    {
+    <script type="text/javascript">
+
+        $(document).on('click', "#createColorModal", function (e) {
+            e.preventDefault();
+            $('#modal-content').load('@Url.Action("AddColor", "Property")');
+        });
+
+        $('.editColorModal').click(function (e) {
+            e.preventDefault();
+            var colorId = $(this).attr("data-id");
+            encodeId = encodeURIComponent(colorId);
+            $('#modal-content').load('@Url.Action("EditColor", "Property")?id=' + encodeId);
+        });
+    </script>
+}

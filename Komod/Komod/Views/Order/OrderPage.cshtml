@@ -1,0 +1,579 @@
+﻿@model Komod.Web.Models.OrderItemModels.OrderInfo
+@{
+    ViewData["Title"] = "Оформление заказа";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+<!-- CONTACTS -->
+<section class="main-about-us">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="section-title">Оформление заказа</h2>
+            </div>
+        </div>
+    </div>
+    <div class="section-wrapper order">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="order__process">
+                        <div class="order__process-group">
+                            <span class="order__process-number order__process-contacts order__process-number_active">1</span>
+                            <p class="order__process-text">Контактные данные</p>
+                        </div>
+                        <div class="order__process-group">
+                            <span class="order__process-number order__process-delivery">2</span>
+                            <p class="order__process-text">Метод доставки</p>
+                        </div>
+                        <div class="order__process-group">
+                            <span class="order__process-number order__process-pay">3</span>
+                            <p class="order__process-text">Информация об оплате</p>
+                        </div>
+                        <div class="order__process-group">
+                            <span class="order__process-number order__process-confirm">4</span>
+                            <p class="order__process-text">Подтверждение заказа</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <form asp-controller="Order" asp-action="CreateOrder" method="post" class="order__form" id="orderForm">
+                        <input type="hidden" asp-for="Order.PromoName" value="@ViewBag.cart[0].PromocodeName"/>
+                        <div class="order-contacts">
+                            <h3 class="order__header">Контактные данные</h3>
+                            <div class="order__form-group">
+                                <label for="" class="order__form-label">ФИО *</label>
+                                <input asp-for="Order.ClientFIO" type="text" class="order__form-input" id="ClientFIO" value="@ViewBag.UserOrder.UserFIO" placeholder="Пример: Иванов Иван Иванович" />
+                                <span class="order__form-error" id="fioValid"></span>
+                            </div>
+                            <div class="order__form-group">
+                                <label for="" class="order__form-label">Email *</label>
+                                <input asp-for="Order.ClientEmail" type="text" class="order__form-input" id="ClientEmail" value="@ViewBag.UserOrder.Email" placeholder="Пример: example@example.ru" />
+                                <span class="order__form-error" id="emailValid"></span>
+                            </div>
+                            <div class="order__form-group">
+                                <label for="" class="order__form-label">Мобильный телефон *</label>
+                                <input asp-for="Order.ClientPhone" type="text" class="order__form-input" id="ClientPhone" value="@ViewBag.UserOrder.PhoneNumber" placeholder="Пример: +7 999 999 99 99" />
+                                <span class="order__form-error" id="phoneValid"></span>
+                            </div>
+                            <div class="order__form-group">
+                                <label for="" class="order__form-label">Доп. телефон </label>
+                                <input asp-for="Order.ClientOtherPhone" type="text" class="order__form-input" />
+                            </div>
+                            <div class="order__form-group d-flex align-items-center">
+                                <label for="" class="order__form-label">Комментарий к заказу </label>
+                                <textarea asp-for="Order.Comment" type="text" class="order__form-input"></textarea>
+                            </div>
+                            <p class="order__form-text">* Обязательные поля</p>
+                            <div class="order__form-row">
+                                <a href="#" class="order__form-btn order__form-btn-delivery order__form-btn_disabled">Продолжить</a>
+                            </div>
+                        </div>
+
+                        <div class="order-method-delivery">
+                            <h3 class="order__header">Метод доставки</h3>
+                            <div class="order__form-group-radioes">
+                                @foreach (var i in ViewBag.DeliveryMethods) {
+                                    <input asp-for="Order.DeliveryMethodName" type="radio" id="@i.Id" class="order__form-radio-input order__form-radio-input_delivery" data-price="@i.DeliveryPrice" data-freeprice="@i.FreeDelivery" data-deliveryname="@i.Name" value="@i.Name" />
+                                    @if (@i.Name == "Самовывоз") {
+                                        <label for="@i.Id" class="order__form-radio">
+                                            <p>Самовывоз</p>
+                                            <p><span>бесплатно</span></p>
+                                            <p>@i.District</p>
+                                        </label>
+                                    }
+                                    else {
+                                        @if (@i.Name == "Доставка по РФ") {
+                                            <label for="@i.Id" class="order__form-radio">
+                                                <p>Доставка по РФ</p>
+                                                <p>Почтой России и СДЭК</p>
+                                                <p><span>рассчитывается индивидуально</span></p>
+                                            </label>
+                                        }
+                                        else {
+                                            <label for="@i.Id" class="order__form-radio">
+                                                <p>@i.Name</p>
+                                                <p><span>@i.DeliveryPrice руб.</span></p>
+                                                <p>При заказе более @i.FreeDelivery руб.</p>
+                                                <p><span>бесплатно</span></p>
+                                            </label>
+                                        }
+                                        
+                                    }
+                                    
+                                }
+                            </div>
+                            <div class="order__form-group order-client-address" id="clientAddress" style="display: none">
+                                <label for="" class="order__form-label">Адрес </label>
+                                <input asp-for="Order.ClientAddress" type="text" class="order__form-input" />
+                            </div>
+                            <div class="order__form-row">
+                                <a href="#" class="order__form-btn order__form-btn-contacts">Назад</a>
+                                <a href="#" class="order__form-btn order__form-btn-pay order__form-btn_disabled">Продолжить</a>
+                            </div>
+                        </div>
+
+                        <div class="order-pay">
+                            <h3 class="order__header">Способ оплаты</h3>
+                            <div class="order__form-group-radioes">
+
+                                <input asp-for="Order.PaymentMethodName" type="radio" class="order__form-radio-input order__form-radio-input-pay" id="card" value="Банковской картой при получении" />
+                                <label for="card" class="order__form-radio">
+                                    <p>Банковской картой при получении</p>
+                                </label>
+
+                                <input asp-for="Order.PaymentMethodName" type="radio" class="order__form-radio-input order__form-radio-input-pay" id="cash" value="Наличными при получении" />
+                                <label for="cash" class="order__form-radio">
+                                    <p>Наличными при получении</p>
+                                </label>
+                            </div>
+                            <div class="order__form-row">
+                                <a href="#" class="order__form-btn order__form-btn-delivery">Назад</a>
+                                <a href="#" class="order__form-btn order__form-btn-confirm order__form-btn_disabled">Продолжить</a>
+                            </div>
+                        </div>
+
+                        <div class="order-confirm">
+                            <h3 class="order__header">Подтверждение заказа</h3>
+                            @foreach (var item in ViewBag.cart)
+                            {
+                                <div class="order-confirm-card">
+                                    <div class="order-confirm-card__group">
+                                        <div class="order-confirm-card__property">Артикул:</div>
+                                        <div class="order-confirm-card__value">@item.Article.Name</div>
+                                    </div>
+                                    <div class="order-confirm-card__group">
+                                        <div class="order-confirm-card__property">Название:</div>
+                                        <div class="order-confirm-card__value">@item.Article.ProductName</div>
+                                    </div>
+                                    <div class="order-confirm-card__group">
+                                        <div class="order-confirm-card__property">Цена за шт.:</div>
+                                        <div class="order-confirm-card__value">@item.Article.Price руб.</div>
+                                    </div>
+                                    <div class="order-confirm-card__group">
+                                        <div class="order-confirm-card__property">Количество:</div>
+                                        <div class="order-confirm-card__value">@item.ItemQuantity</div>
+                                    </div>
+                                    <div class="order-confirm-card__group">
+                                        <div class="order-confirm-card__property">Всего:</div>
+                                        <div class="order-confirm-card__value">@(item.Article.Price * item.ItemQuantity)</div>
+                                    </div>
+                                </div>
+                                <hr />
+                            }
+
+                            <div class="order-confirm-card">
+                                <div class="order-confirm-card__group">
+                                    <div class="order-confirm-card__property">Предварительный итог:</div>
+                                    <div class="order-confirm-card__value">@ViewBag.total</div>
+                                </div>
+                                <div class="order-confirm-card__group">
+                                    <div class="order-confirm-card__property">Доставка:</div>
+                                    <div class="order-confirm-card__value deliveryPrice">0 руб.</div>
+                                </div>
+                                <div class="order-confirm-card__group">
+                                    <div class="order-confirm-card__property">Итого к оплате:</div>
+                                    <div class="order-confirm-card__value totalPrice">0</div>
+                                </div>
+                            </div>
+
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Артикул</th>
+                                        <th>Название товара</th>
+                                        <th>Цена за шт.</th>
+                                        <th>Кол-во</th>
+                                        <th>Всего</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in ViewBag.cart)
+                                    {
+                                        <tr>
+                                            <td>@item.Article.Name</td>
+                                            <td>@item.Article.ProductName</td>
+                                            <td>
+                                            @if(item.IsPromocodeExistForArticle)
+                                            {
+                                                @(item.Article.Price * (1 - item.DiscountPercent/100))
+                                            }
+                                            else
+                                            {
+                                                @item.Article.Price
+                                            }
+                                             руб.</td>
+                                            <td>@item.ItemQuantity</td>
+                                            <td>
+                                            @if(item.IsPromocodeExistForArticle)
+                                            {
+                                                @((item.Article.Price * (1 - item.DiscountPercent/100)) * item.ItemQuantity)
+                                            }
+                                            else
+                                            {
+                                                @(item.Article.Price * item.ItemQuantity)
+                                            }
+                                             руб.</td>
+                                        </tr>
+                                    }
+                                    <tr>
+                                        <td colspan="3" class="text-right">Предварительный итог</td>
+                                        <td id="productsPrice" data-price="@ViewBag.total">@ViewBag.total руб.</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" class="text-right">Доставка</td>
+                                        <td class="deliveryPrice">0 руб.</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" class="text-right"><strong>Итого к оплате</strong></td>
+                                        <td>
+                                            <strong class="totalPrice"></strong>
+                                            <input id="totalOrderPrice" type="hidden" name="totalOrderPrice" value="" />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="order__form-row">
+                                <a href="#" class="order__form-btn order__form-btn-pay">Назад</a>
+                                <button type="submit" class="order__form-btn order__form-btn-sumbit">Подтвердить</button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- CONTACTS END -->
+
+@section scripts
+    {
+    <script>
+        $(document).ready(function () {
+
+            $('#orderForm').keydown(function (event) {
+                if (event.keyCode == 13) {
+                    event.preventDefault();
+                    return false;
+                }
+            });
+
+            //Валидация при заказе
+
+            var fioOk = false;
+            var emailOk = false;
+            var phoneOk = false;
+
+            var patternEmail = /^[a-zA-Z1-9\-\._]+@@[a-z1-9]+(.[a-z1-9]+){1,}$/i;
+            var email = $('#ClientEmail');
+
+            if (email.val() != '') {
+                if (email.val().search(patternEmail) == 0) {
+                    $('#emailValid').text('');
+                    email.removeClass("order__form-input_error").addClass("order__form-input_ok");
+                    emailOk = true;
+                    if (fioOk == true && emailOk == true && phoneOk == true)
+                        $('.order__form-btn-delivery').removeClass("order__form-btn_disabled");
+                } else {
+                    $('#emailValid').text('Неверный e-mail');
+                    $('.order__form-btn-delivery').addClass(".order__form-btn_disabled");
+                    email.removeClass("order__form-input_ok").addClass("order__form-input_error");
+                    emailOk = false;
+                    $('.order__form-btn-delivery').addClass("order__form-btn_disabled");
+                }
+            }
+
+            email.blur(function () {
+                if (email.val() != '') {
+                    if (email.val().search(patternEmail) == 0) {
+                        $('#emailValid').text('');
+                        email.removeClass("order__form-input_error").addClass("order__form-input_ok");
+                        emailOk = true;
+                        if (fioOk == true && emailOk == true && phoneOk == true)
+                            $('.order__form-btn-delivery').removeClass("order__form-btn_disabled");
+                    } else {
+                        $('#emailValid').text('Неверный e-mail');
+                        $('.order__form-btn-delivery').addClass(".order__form-btn_disabled");
+                        email.removeClass("order__form-input_ok").addClass("order__form-input_error");
+                        emailOk = false;
+                        $('.order__form-btn-delivery').addClass("order__form-btn_disabled");
+                    }
+                } else {
+                    $('#emailValid').text('Не заполнен E-mail');
+                    $('.order__form-btn-delivery').addClass("order__form-btn_disabled");
+                    email.removeClass("order__form-input_ok").addClass("order__form-input_error");
+                    emailOk = false;
+                    $('.order__form-btn-delivery').addClass("order__form-btn_disabled");
+                }
+            });
+
+            var patternFIO = /^([А-ЯЁ][а-яё]+[\-\s]?){3,}$/i;
+            var fio = $('#ClientFIO');
+
+            if (fio.val() != '') {
+                if (fio.val().search(patternFIO) == 0) {
+                    $('#fioValid').text('');
+                    fio.removeClass("order__form-input_error").addClass("order__form-input_ok");
+                    fioOk = true;
+                    if (fioOk == true && emailOk == true && phoneOk == true)
+                        $('.order__form-btn-delivery').removeClass("order__form-btn_disabled");
+                } else {
+                    $('#fioValid').text('Неверное ФИО');
+                    $('.order__form-btn-delivery').addClass(".order__form-btn_disabled");
+                    fio.removeClass("order__form-input_ok").addClass("order__form-input_error");
+                    fioOk = false;
+                    $('.order__form-btn-delivery').addClass("order__form-btn_disabled");
+                }
+            }
+
+            fio.blur(function () {
+                if (fio.val() != '') {
+                    if (fio.val().search(patternFIO) == 0) {
+                        $('#fioValid').text('');
+                        fio.removeClass("order__form-input_error").addClass("order__form-input_ok");
+                        fioOk = true;
+                        if (fioOk == true && emailOk == true && phoneOk == true)
+                            $('.order__form-btn-delivery').removeClass("order__form-btn_disabled");
+                    } else {
+                        $('#fioValid').text('Неверное ФИО');
+                        $('.order__form-btn-delivery').addClass(".order__form-btn_disabled");
+                        fio.removeClass("order__form-input_ok").addClass("order__form-input_error");
+                        fioOk = false;
+                        $('.order__form-btn-delivery').addClass("order__form-btn_disabled");
+                    }
+                } else {
+                    $('#fioValid').text('Не заполнено ФИО');
+                    $('.order__form-btn-delivery').addClass("order__form-btn_disabled");
+                    fio.removeClass("order__form-input_ok").addClass("order__form-input_error");
+                    fioOk = false;
+                    $('.order__form-btn-delivery').addClass("order__form-btn_disabled");
+                }
+            });
+
+            var patternPhone = /^\+?\d+([\(\s\-]?\d+[\)\s\-]?[\d\s\-]+)?$/i;
+            var phone = $('#ClientPhone');
+
+            if (phone.val() != '') {
+                if (phone.val().search(patternPhone) == 0) {
+                    $('#phoneValid').text('');
+                    phone.removeClass("order__form-input_error").addClass("order__form-input_ok");
+                    phoneOk = true;
+                    if (fioOk == true && emailOk == true && phoneOk == true)
+                        $('.order__form-btn-delivery').removeClass("order__form-btn_disabled");
+                } else {
+                    $('#phoneValid').text('Неверный Телефон');
+                    $('.order__form-btn-delivery').addClass(".order__form-btn_disabled");
+                    phone.removeClass("order__form-input_ok").addClass("order__form-input_error");
+                    phoneOk = false;
+                    $('.order__form-btn-delivery').addClass("order__form-btn_disabled");
+                }
+            }
+
+            phone.blur(function () {
+                if (phone.val() != '') {
+                    if (phone.val().search(patternPhone) == 0) {
+                        $('#phoneValid').text('');
+                        phone.removeClass("order__form-input_error").addClass("order__form-input_ok");
+                        phoneOk = true;
+                        if (fioOk == true && emailOk == true && phoneOk == true)
+                            $('.order__form-btn-delivery').removeClass("order__form-btn_disabled");
+                    } else {
+                        $('#phoneValid').text('Неверный Телефон');
+                        $('.order__form-btn-delivery').addClass(".order__form-btn_disabled");
+                        phone.removeClass("order__form-input_ok").addClass("order__form-input_error");
+                        phoneOk = false;
+                        $('.order__form-btn-delivery').addClass("order__form-btn_disabled");
+                    }
+                } else {
+                    $('#phoneValid').text('Не заполнен Телефон');
+                    $('.order__form-btn-delivery').addClass("order__form-btn_disabled");
+                    phone.removeClass("order__form-input_ok").addClass("order__form-input_error");
+                    phoneOk = false;
+                    $('.order__form-btn-delivery').addClass("order__form-btn_disabled");
+                }
+            });
+
+            //var fioCheck = false;
+            //var emailCheck = false;
+            //var phoneCheck = false;
+            //
+            //function contactsCheck() {
+            //    var patternFIO = /^([А-ЯЁ][а-яё]+[\-\s]?){3,}$/i;
+            //    var patternEmail = /^[a-zA-Z1-9\-\._]+@@[a-z1-9]+(.[a-z1-9]+){1,}$/i;
+            //    var patternPhone = /^\+?\d+([\(\s\-]?\d+[\)\s\-]?[\d\s\-]+)?$/i;
+            //    var fio = $('#ClientFIO');
+            //    var email = $('#ClientEmail');
+            //    var phone = $('#ClientPhone');
+            //
+            //    //Проверка ФИО
+            //    if (fio.val() != '') {
+            //        if (fio.val().search(patternFIO) == 0) {
+            //            $('#fioValid').text('');
+            //            fio.removeClass("order__form-input_error").addClass("order__form-input_ok");
+            //            fioCheck = true;
+            //        } else {
+            //            $('#fioValid').text('Неверное ФИО');
+            //            fio.removeClass("order__form-input_ok").addClass("order__form-input_error");
+            //            fioCheck = false;
+            //        }
+            //    }
+            //    else {
+            //        $('#fioValid').text('Заполните поле');
+            //        fio.removeClass("order__form-input_ok").addClass("order__form-input_error");
+            //        fioCheck = false;
+            //    }
+            //
+            //    // Проверка Email
+            //    if (email.val() != '') {
+            //        if (email.val().search(patternEmail) == 0) {
+            //            $('#emailValid').text('');
+            //            email.removeClass("order__form-input_error").addClass("order__form-input_ok");
+            //            emailCheck = true;
+            //        } else {
+            //            $('#emailValid').text('Неверный e-mail');
+            //            email.removeClass("order__form-input_ok").addClass("order__form-input_error");
+            //            emailCheck = false;
+            //        }
+            //    }
+            //    else {
+            //        $('#emailValid').text('Заполните поле');
+            //        email.removeClass("order__form-input_ok").addClass("order__form-input_error");
+            //        emailCheck = false;
+            //    }
+            //
+            //    // проверка телефона
+            //    if (phone.val() != '') {
+            //        if (phone.val().search(patternPhone) == 0) {
+            //            $('#phoneValid').text('');
+            //            phone.removeClass("order__form-input_error").addClass("order__form-input_ok");
+            //            phoneCheck = true;
+            //        } else {
+            //            $('#phoneValid').text('Неверный Телефон');
+            //            phone.removeClass("order__form-input_ok").addClass("order__form-input_error");
+            //            phoneCheck = false;
+            //        }
+            //    }
+            //    else {
+            //        $('#emailValid').text('Заполните поле');
+            //        email.removeClass("order__form-input_ok").addClass("order__form-input_error");
+            //        emailCheck = false;
+            //    }
+            //}
+            var deliveryPrice = 0;
+            var fullPrice = 0;
+            $('.order__form-radio-input_delivery').click(function () {
+                deliveryPrice = parseInt($(this).attr("data-price"));
+                var freePrice = parseInt($(this).attr("data-freeprice"));
+                var deliveryName = $(this).attr("data-deliveryname");
+                var productsPrice = parseInt($('#productsPrice').attr("data-price"));
+                var clientAddress = $('#clientAddress');
+                if(productsPrice < freePrice) {
+                    fullPrice = productsPrice + deliveryPrice;
+                }
+                else {
+                    fullPrice = productsPrice;
+                    deliveryPrice = 0;
+                }
+
+                if (deliveryName === "Самовывоз") {
+                    clientAddress.css("display", "none");
+                    clientAddress.children("input").val("г. Тольятти, Ворошилова 24");
+                    $('.deliveryPrice').html(deliveryPrice + " руб.");
+                    $('#cash').next("label").show();
+                    $('#card').next("label").show();
+                    $("#cash").prop("checked", false);
+                    $("#card").prop("checked", false);
+
+                    $('.order__form-btn-pay').removeClass("order__form-btn_disabled");
+                    $('.order__form-btn-confirm').addClass("order__form-btn_disabled");
+
+                    $('.totalPrice').html(fullPrice + " руб.");
+                    $('#totalOrderPrice').val(fullPrice);
+                }
+                else {
+                    clientAddress.css("display", "block");
+                    clientAddress.children("input").val("");
+                }
+            });
+
+            $('#clientAddress input').on('keyup',function(){
+                var $this = $(this),
+                    val = $this.val();
+                
+                if (val.length >= 1) {
+                    $('.deliveryPrice').html(deliveryPrice + " руб.");
+                    $('#cash').next("label").show();
+                    $('#card').next("label").hide();
+                    $("#cash").prop("checked", false);
+                    $("#card").prop("checked", false);
+
+                    $('.order__form-btn-pay').removeClass("order__form-btn_disabled");
+                    $('.order__form-btn-confirm').addClass("order__form-btn_disabled");
+
+                    $('.totalPrice').html(fullPrice + " руб.");
+                    $('#totalOrderPrice').val(fullPrice);
+                }
+                else {
+                    $('.order__form-btn-pay').addClass("order__form-btn_disabled");
+                }
+            });
+
+            $('.order__form-radio-input-pay').click(function () {
+                $('.order__form-btn-confirm').removeClass("order__form-btn_disabled");
+            });
+
+            $('.order__form-btn-contacts').on('click', function (e) {
+                e.preventDefault();
+                $('.order-contacts').show();
+                $('.order-pay').hide();
+                $('.order-confirm').hide();
+                $('.order-method-delivery').hide();
+
+                $('.order__process-contacts').addClass("order__process-number_active");
+                $('.order__process-delivery').removeClass("order__process-number_active");
+                $('.order__process-pay').removeClass("order__process-number_active");
+                $('.order__process-confirm').removeClass("order__process-number_active");
+            });
+            $('.order__form-btn-delivery').on('click', function (e) {
+                e.preventDefault();
+                $('.order-contacts').hide();
+                $('.order-pay').hide();
+                $('.order-confirm').hide();
+                $('.order-method-delivery').show();
+
+                $('.order__process-contacts').removeClass("order__process-number_active");
+                $('.order__process-delivery').addClass("order__process-number_active");
+                $('.order__process-pay').removeClass("order__process-number_active");
+                $('.order__process-confirm').removeClass("order__process-number_active");
+            });
+            $('.order__form-btn-pay').on('click', function (e) {
+                e.preventDefault();
+                $('.order-contacts').hide();
+                $('.order-pay').show();
+                $('.order-confirm').hide();
+                $('.order-method-delivery').hide();
+
+                $('.order__process-contacts').removeClass("order__process-number_active");
+                $('.order__process-delivery').removeClass("order__process-number_active");
+                $('.order__process-pay').addClass("order__process-number_active");
+                $('.order__process-confirm').removeClass("order__process-number_active");
+            });
+
+            $('.order__form-btn-confirm').on('click', function (e) {
+                e.preventDefault();
+                $('.order-contacts').hide();
+                $('.order-pay').hide();
+                $('.order-confirm').show();
+                $('.order-method-delivery').hide();
+
+                $('.order__process-contacts').removeClass("order__process-number_active");
+                $('.order__process-delivery').removeClass("order__process-number_active");
+                $('.order__process-pay').removeClass("order__process-number_active");
+                $('.order__process-confirm').addClass("order__process-number_active");
+            });
+        });
+    </script>
+}

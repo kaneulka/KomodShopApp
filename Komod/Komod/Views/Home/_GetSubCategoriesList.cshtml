@@ -1,0 +1,10 @@
+﻿@using Komod.Web.Models.CategoryModels;
+@model List<CategoryViewModel>
+
+@foreach (var category in Model)
+{
+<li class="catalog-submenu__item" data-parentId="@category.Id">
+    <a asp-controller="Home" asp-action="Catalog" asp-route-categoryId="@category.Id" class="catalog-submenu__link">@category.Name</a>
+    <ul class="catalog-submenu"></ul>
+</li>
+}

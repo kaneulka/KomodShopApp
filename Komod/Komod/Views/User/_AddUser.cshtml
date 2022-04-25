@@ -1,0 +1,30 @@
+﻿@model CreateUserViewModel
+@using Komod.Web.Models.UserModels
+@using Komod.Web.Models
+
+<form asp-action="AddUser" role="form">
+    @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Добавление пользователя" })
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-12">
+                <div class="form-group">
+                    <label asp-for="Email"></label>
+                    <input asp-for="Email" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="UserName"></label>
+                    <input asp-for="UserName" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="UserFIO"></label>
+                    <input asp-for="UserFIO" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="Password"></label>
+                    <input asp-for="Password" class="form-control" />
+                </div>
+            </div>
+        </div>
+    </div>
+    @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
+</form>

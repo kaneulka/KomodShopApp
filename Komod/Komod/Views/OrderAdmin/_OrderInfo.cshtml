@@ -1,0 +1,41 @@
+﻿@model OrderInfo
+@using Komod.Web.Models.OrderItemModels
+@using Komod.Web.Models
+
+<form asp-action="OrderInfo" role="form" asp-route-returnurl="@ViewBag.ReturnUrl">
+    @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Информация о заказе" })
+    <div class="modal-body">
+        <p><strong>ФИО заказчика: </strong>@Model.Order.ClientFIO</p>
+        <p><strong>E-mail заказчика: </strong>@Model.Order.ClientEmail</p>
+        <p><strong>Телефон заказчика: </strong>@Model.Order.ClientPhone</p>
+        <p><strong>Второй телефон заказчика: </strong>@Model.Order.ClientOtherPhone</p>
+        <p><strong>Адрес заказчика: </strong>@Model.Order.ClientAddress</p>
+        <p><strong>Статус заказа: </strong>@Model.Order.OrderStatusName</p>
+        <p><strong>Форма оплаты: </strong>@Model.Order.PaymentMethodName</p>
+        <p><strong>Доставка: </strong>@Model.Order.DeliveryMethodName</p>
+        <p><strong>Цена за доставку: </strong>@Model.Order.DeliveryPrice</p>
+        <p><strong>Общая сумма заказа: </strong>@(Model.Order.TotalPrice + Model.Order.DeliveryPrice) руб.</p>
+
+        <table class="table table-bordered table-hover order-info__table">
+            <tr>
+                <th>Артикул</th>
+                <th>Название товара</th>
+                <th>Кол-во</th>
+                <th>Цена за шт.</th>
+                <th>Сумма</th>
+            </tr>
+
+            @foreach (var oi in Model.OrderItems)
+            {
+                <tr>
+                    <td>@oi.ArticleName</td>
+                    <td><a asp-action="Articles" asp-controller="Product" asp-route-productId="@oi.ProductId">@oi.ProductName</a></td>
+                    <td>@oi.Quantity</td>
+                    <td>@oi.UnitPrice</td>
+                    <td>@oi.TotalPrice</td>
+                </tr>
+            }
+        </table>
+    </div>
+    @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
+</form>

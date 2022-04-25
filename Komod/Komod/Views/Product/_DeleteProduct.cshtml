@@ -1,0 +1,13 @@
+﻿@model ProductViewModel
+@using Komod.Web.Models.ProductModels
+@using Komod.Web.Models
+
+<form asp-action="DeleteProduct" role="form" asp-route-returnurl="@ViewBag.ReturnUrl">
+    @Html.Partial("_ModalHeader", new ModalHeader { Heading = "Удаление продукта" })
+
+    <div class="modal-body">
+        <input asp-for="Id" />
+        Вы уверены, что хотите удалить @Model.Name?
+    </div>
+    @Html.Partial("_ModalFooter", new ModalFooter { SubmitButtonText = "Удалить" })
+</form>

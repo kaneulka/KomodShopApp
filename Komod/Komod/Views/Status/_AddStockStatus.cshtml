@@ -1,0 +1,20 @@
+﻿@model StockStatusViewModel
+@using Komod.Web.Models.StatusModels
+@using Komod.Web.Models
+
+<form asp-action="AddStockStatus" role="form">
+    @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Добавление статуса продукта" })
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-12">
+                <div class="form-group">
+                    <span asp-validation-for="Name"></span><br />
+                    <label asp-for="Name"></label>
+                    <input asp-for="Name" class="form-control" />
+                </div>
+            </div>
+        </div>
+    </div>
+    @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
+</form>
+

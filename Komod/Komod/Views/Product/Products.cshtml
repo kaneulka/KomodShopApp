@@ -1,0 +1,337 @@
+﻿@*page "{page}/{sortType}/{searchString}"*@
+@model ProductsViewModel
+@using Komod.Web.Models.ProductModels
+@using Komod.Web.Code
+@using Komod.Web.Models
+
+
+@{
+    ViewData["Title"] = "Продукты";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    string currentUrl = $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}{Context.Request.QueryString}";
+}
+
+<div class="container-fluid">
+    <div class="fade-in">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-header"><h1>Товары</h1></div>
+                    <div class="card-body">
+                        <div class="row mb-2">
+                            <div class="col-lg-2">
+                                <a id="createProductModal" data-toggle="modal" href="#" data-target="#modal-action-product" class="btn btn-pill btn-block btn-primary">
+                                    Добавить товар
+                                </a>
+                            </div>
+                            <div class="col-lg-10">
+                                <form asp-controller="Product" asp-action="Products" method="get" class="form-inline">
+                                    <div class="form-group mb-0 mr-3">
+                                        <select name="sortType" id="sortType" class="form-control" data-sortType="@ViewBag.SortType">
+                                            <option id="sortType-0" value="0">По дате добавления</option>
+                                            <option id="sortType-1" value="1">По дате добавления (в обратном порядке)</option>
+                                            <option id="sortType-2" value="2">По дате изменения</option>
+                                            <option id="sortType-3" value="3">По дате изменения (в обратном порядке)</option>
+                                            <option id="sortType-4" value="4">По названию</option>
+                                            <option id="sortType-5" value="5">По названию (в обратном порядке)</option>
+                                            <option id="sortType-6" value="6">По категории</option>
+                                            <option id="sortType-7" value="7">По категории (в обратном порядке)</option>
+                                            <option id="sortType-8" value="8">По производителю</option>
+                                            <option id="sortType-9" value="9">По производителю (в обратном порядке)</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group mb-0">
+                                        <input type="text" name="searchString" class="form-control mr-3 inputSearch" placeholder="Поиск..." />
+                                        <button type="submit" class="btn btn-dark btn-pill btn-sm btnSearch">
+                                            <i class="c-icon cil-search"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="row mt-3 mb-3">
+                            <div class="col-12">
+                                <div class="d-flex">
+                                    <ul class="pagination" style="margin-bottom: 0">
+                                        @if (Model.PageViewModel.HasPreviousPage)
+                                        {
+                                            <li class="page-item"><a class="page-link" asp-controller="Product" asp-action="Products" asp-route-page="@(Model.PageViewModel.PageNumber - 1)" asp-route-searchString="@Model.searchString" asp-route-sortType="@Model.sortType">Назад</a></li>
+                                        }
+                                        @if ((Model.PageViewModel.PageNumber - 2) > 0)
+                                        {
+                                            string fp = "";
+                                            @if (Model.PageViewModel.PageNumber - 2 > 1)
+                                            {
+                                                fp = "...";
+                                            }
+                                            <li class="page-item"><a class="page-link" asp-controller="Product" asp-action="Products" asp-route-searchString="@Model.searchString" asp-route-sortType="@Model.sortType">1 @fp</a></li>
+                                        }
+
+
+                                        @if (Model.PageViewModel.HasPreviousPage)
+                                        {
+                                            <li class="page-item">
+                                                <a class="page-link" asp-controller="Product" asp-action="Products" asp-route-page="@(Model.PageViewModel.PageNumber - 1)" asp-route-searchString="@Model.searchString" asp-route-sortType="@Model.sortType">
+                                                    @(Model.PageViewModel.PageNumber - 1)
+                                                </a>
+                                            </li>
+                                        }
+                                        <li class="page-item active">
+                                            <a class="page-link" asp-controller="Product" asp-action="Products" asp-route-page="@Model.PageViewModel.PageNumber" asp-route-searchString="@Model.searchString" asp-route-sortType="@Model.sortType">
+                                                @Model.PageViewModel.PageNumber
+                                            </a>
+                                        </li>
+                                        @if (Model.PageViewModel.HasNextPage)
+                                        {
+                                            <li class="page-item">
+                                                <a class="page-link" asp-controller="Product" asp-action="Products" asp-route-page="@(Model.PageViewModel.PageNumber + 1)" asp-route-searchString="@Model.searchString" asp-route-sortType="@Model.sortType">
+                                                    @(Model.PageViewModel.PageNumber + 1)
+                                                </a>
+                                            </li>
+                                        }
+
+                                        @if ((Model.PageViewModel.PageNumber + 1) < Model.PageViewModel.TotalPages)
+                                        {
+                                            string fp = "";
+                                            @if (Model.PageViewModel.PageNumber + 2 < Model.PageViewModel.TotalPages)
+                                            {
+                                                fp = "...";
+                                            }
+                                            <li class="page-item">
+                                                <a class="page-link" asp-controller="Product" asp-action="Products" asp-route-page="@Model.PageViewModel.TotalPages" asp-route-searchString="@Model.searchString" asp-route-sortType="@Model.sortType">
+                                                    @fp @Model.PageViewModel.TotalPages
+                                                </a>
+                                            </li>
+                                        }
+                                        @if (Model.PageViewModel.HasNextPage)
+                                        {
+                                            <li class="page-item">
+                                                <a class="page-link" asp-controller="Product" asp-action="Products" asp-route-page="@(Model.PageViewModel.PageNumber + 1)" asp-route-searchString="@Model.searchString" asp-route-sortType="@Model.sortType">
+                                                    Вперед
+                                                </a>
+                                            </li>
+                                        }
+                                    </ul>
+                                    <form class="form-inline ml-3" asp-controller="Product" asp-action="Products" asp-route-searchString="@Model.searchString" asp-route-sortType="@Model.sortType" method="get">
+                                        <input type="number" name="page" class="form-control" />
+                                        <button type="submit" class="btn btn-primary btn-sm"><i class="c-icon cil-arrow-right"></i></button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <table class="table table-responsive-sm table-bordered table-striped table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Название</th>
+                                    <th>Дата добавления</th>
+                                    <th>Дата изменения</th>
+                                    <th>Категория</th>
+                                    <th>Производитель</th>
+                                    <th>Страна</th>
+                                    <th>Действие</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Products)
+                                {
+                                    <tr>
+                                        <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.AddedDate)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.ModifiedDate)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Category.Name)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Brand.Name)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Country.Name)</td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
+                                                <a asp-controller="Product" asp-action="Articles" asp-route-productId="@item.Id" asp-route-returnurl="@currentUrl" class="btn btn-info">
+                                                    <i class="c-icon cil-list"></i>
+                                                </a>
+                                                <a data-toggle="modal" href="#" data-id="@item.Id" data-target="#modal-action-product" class="btn btn-dark editProductModal">
+                                                    <i class="c-icon cil-pencil"></i>
+                                                </a>
+                                                <a asp-controller="Product" asp-action="ImageList" asp-route-productId="@item.Id" asp-route-returnurl="@currentUrl" class="btn btn-primary">
+                                                    <i class="c-icon cil-image-plus"></i>
+                                                </a>
+                                            </div>
+
+                                            <div class="btn-group btn-group-sm ml-3" role="group" aria-label="Small button group">
+                                                @if (item.New == true)
+                                                {
+                                                    <form asp-action="OnMainNew" asp-controller="Product" method="post" id="newFormSuccess-@item.Id" style="display:none" asp-route-Id="@item.Id" asp-route-returnurl="@currentUrl">
+                                                    </form>
+                                                    <a class="btn btn-success" href="javascript:{}" onclick="document.getElementById('newFormSuccess-@item.Id').submit(); return false;">New</a>
+                                                }
+                                                else
+                                                {
+                                                    <form asp-action="OnMainNew" asp-controller="Product" method="post" id="newFormUnsuccess-@item.Id" style="display:none" asp-route-Id="@item.Id" asp-route-returnurl="@currentUrl">
+                                                    </form>
+                                                    <a class="btn btn-danger" href="javascript:{}" onclick="document.getElementById('newFormUnsuccess-@item.Id').submit(); return false;">New</a>
+                                                }
+                                                @if (item.Hit == true)
+                                                {
+                                                    <form asp-action="OnMainHit" asp-controller="Product" method="post" id="hitFormSuccess-@item.Id" style="display:none" asp-route-Id="@item.Id" asp-route-returnurl="@currentUrl">
+                                                    </form>
+                                                    <a class="btn btn-success" href="javascript:{}" onclick="document.getElementById('hitFormSuccess-@item.Id').submit(); return false;">Hit</a>
+                                                }
+                                                else
+                                                {
+                                                    <form asp-action="OnMainHit" asp-controller="Product" method="post" id="hitFormUnsuccess-@item.Id" style="display:none" asp-route-Id="@item.Id" asp-route-returnurl="@currentUrl">
+                                                    </form>
+                                                    <a class="btn btn-danger" href="javascript:{}" onclick="document.getElementById('hitFormUnsuccess-@item.Id').submit(); return false;">Hit</a>
+                                                }
+                                                <a data-toggle="modal" href="#" data-id="@item.Id" data-target="#modal-action-product" class="btn btn-danger deleteProductModal">
+                                                    <i class="c-icon cil-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <nav>
+                            <div class="d-flex">
+                                <ul class="pagination" style="margin-bottom: 0">
+                                    @if (Model.PageViewModel.HasPreviousPage)
+                                    {
+                                        <li class="page-item"><a class="page-link" asp-controller="Product" asp-action="Products" asp-route-page="@(Model.PageViewModel.PageNumber - 1)" asp-route-searchString="@Model.searchString" asp-route-sortType="@Model.sortType">Назад</a></li>
+                                    }
+                                    @if ((Model.PageViewModel.PageNumber - 2) > 0)
+                                    {
+                                        string fp = "";
+                                        @if (Model.PageViewModel.PageNumber - 2 > 1)
+                                        {
+                                            fp = "...";
+                                        }
+                                        <li class="page-item"><a class="page-link" asp-controller="Product" asp-action="Products" asp-route-searchString="@Model.searchString" asp-route-sortType="@Model.sortType">1 @fp</a></li>
+                                    }
+
+
+                                    @if (Model.PageViewModel.HasPreviousPage)
+                                    {
+                                        <li class="page-item">
+                                            <a class="page-link" asp-controller="Product" asp-action="Products" asp-route-page="@(Model.PageViewModel.PageNumber - 1)" asp-route-searchString="@Model.searchString" asp-route-sortType="@Model.sortType">
+                                                @(Model.PageViewModel.PageNumber - 1)
+                                            </a>
+                                        </li>
+                                    }
+                                    <li class="page-item active">
+                                        <a class="page-link" asp-controller="Product" asp-action="Products" asp-route-page="@Model.PageViewModel.PageNumber" asp-route-searchString="@Model.searchString" asp-route-sortType="@Model.sortType">
+                                            @Model.PageViewModel.PageNumber
+                                        </a>
+                                    </li>
+                                    @if (Model.PageViewModel.HasNextPage)
+                                    {
+                                        <li class="page-item">
+                                            <a class="page-link" asp-controller="Product" asp-action="Products" asp-route-page="@(Model.PageViewModel.PageNumber + 1)" asp-route-searchString="@Model.searchString" asp-route-sortType="@Model.sortType">
+                                                @(Model.PageViewModel.PageNumber + 1)
+                                            </a>
+                                        </li>
+                                    }
+
+                                    @if ((Model.PageViewModel.PageNumber + 1) < Model.PageViewModel.TotalPages)
+                                    {
+                                        string fp = "";
+                                        @if (Model.PageViewModel.PageNumber + 2 < Model.PageViewModel.TotalPages)
+                                        {
+                                            fp = "...";
+                                        }
+                                        <li class="page-item">
+                                            <a class="page-link" asp-controller="Product" asp-action="Products" asp-route-page="@Model.PageViewModel.TotalPages" asp-route-searchString="@Model.searchString" asp-route-sortType="@Model.sortType">
+                                                @fp @Model.PageViewModel.TotalPages
+                                            </a>
+                                        </li>
+                                    }
+                                    @if (Model.PageViewModel.HasNextPage)
+                                    {
+                                        <li class="page-item">
+                                            <a class="page-link" asp-controller="Product" asp-action="Products" asp-route-page="@(Model.PageViewModel.PageNumber + 1)" asp-route-searchString="@Model.searchString" asp-route-sortType="@Model.sortType">
+                                                Вперед
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
+                                <form class="form-inline ml-3" asp-controller="Product" asp-action="Products" asp-route-searchString="@Model.searchString" asp-route-sortType="@Model.sortType" method="get">
+                                    <input type="number" name="page" class="form-control" />
+                                    <button type="submit" class="btn btn-primary btn-sm"><i class="c-icon cil-arrow-right"></i></button>
+                                </form>
+                            </div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-product", AreaLabeledId = "modal-action-product-label", Size = ModalSize.Large })
+
+@section scripts
+    {
+    <script>
+        var url = window.location.href;
+        currentUrl = encodeURIComponent(url);
+
+        $(document).on('click', "#createProductModal", function (e) {
+            e.preventDefault();
+            $('#modal-content').load('@Url.Action("AddProduct", "Product")?returnurl=' + currentUrl);
+        });
+        $('.editProductModal').click(function (e) {
+            e.preventDefault();
+            var productId = $(this).attr("data-id");
+            name = encodeURIComponent(productId);
+            $('#modal-content').load('@Url.Action("EditProduct", "Product")?id=' + productId + '&returnurl=' + currentUrl);
+        });
+        $('.deleteProductModal').click(function (e) {
+            e.preventDefault();
+            var productId = $(this).attr("data-id");
+            name = encodeURIComponent(productId);
+            $('#modal-content').load('@Url.Action("DeleteProduct", "Product")?id=' + productId + '&returnurl=' + currentUrl);
+        });
+
+        @*function getval(id) {
+            if (id.value > 0) {
+                categoryId = encodeURIComponent(id.value);
+                $('.propertiesList').load('@Url.Action("PropertyList", "Product")?categoryId=' + categoryId);
+            }
+            else {
+                $('.propertiesList').html('');
+            }
+        }*@
+
+        var sortType = $('#sortType').attr("data-sortType");
+
+        switch (sortType) {
+            case "0":
+                $('#sortType-0').attr("selected", "selected");
+                break;
+            case "1":
+                $('#sortType-1').attr("selected", "selected");
+                break;
+            case "2":
+                $('#sortType-2').attr("selected", "selected");
+                break;
+            case "3":
+                $('#sortType-3').attr("selected", "selected");
+                break;
+            case "4":
+                $('#sortType-4').attr("selected", "selected");
+                break;
+            case "5":
+                $('#sortType-5').attr("selected", "selected");
+                break;
+            case "6":
+                $('#sortType-6').attr("selected", "selected");
+                break;
+            case "7":
+                $('#sortType-7').attr("selected", "selected");
+                break;
+            case "8":
+                $('#sortType-8').attr("selected", "selected");
+                break;
+            case "9":
+                $('#sortType-9').attr("selected", "selected");
+                break;
+        }
+    </script>
+}

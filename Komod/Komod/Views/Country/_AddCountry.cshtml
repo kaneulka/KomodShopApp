@@ -1,0 +1,20 @@
+@model CountryViewModel
+@using Komod.Web.Models.CountryModels
+@using Komod.Web.Models
+
+<form asp-action="AddCountry" role="form">
+    @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Добавление производителя" })
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-12">
+                <div class="form-group">
+                    <span asp-validation-for="CountryName"></span><br />
+                    <label asp-for="CountryName"></label>
+                    <input asp-for="CountryName" class="form-control" />
+                </div>
+            </div>
+        </div>
+    </div>
+    @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
+</form>
+

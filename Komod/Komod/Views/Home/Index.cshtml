@@ -1,0 +1,569 @@
+﻿@model List<EventPromotionViewModel>
+@using Komod.Web.Models.EventPromotionModels
+@{
+}
+
+
+<div class="section-wrapper first-screen">
+    <div class="first-screen__bg"></div>
+    <div class="container mobile-container-index">
+        <div class="row">
+            <div class="first-screen__group">
+                <ul class="main-categories">
+                    @foreach (var c in ViewBag.Categories)
+                    {
+                        <li class="main-categories__item">
+                            <a asp-action="Catalog" asp-controller="Home" asp-route-categoryId="@c.Id" class="main-categories__link"><span>@c.Name</span></a>
+                        </li>
+                    }
+                </ul>
+                <div class="banner-slider" id="banner-slider" data-slides="@(Model.Count() == 0 ? 1 : Model.Count())"><!-- вместо 4ки поставить количество слайдов -->
+                    <div class="banner-slider__wrapper">
+                        <div class="banner-slider__viewport">
+                            <div class="banner-slider__content" style="width: calc(100% * @(Model.Count() == 0 ? 1 : Model.Count()) /*вместо 4ки поставить количество слайдов*/)">
+                                @if (Model.Count == 0)
+                                {
+                                    <a asp-action="EventPromotions" asp-controller="Home" class="banner-slider__slide">
+                                        <img src="~/images/banner.jpg" alt="Слайд 1" class="banner-slider__img">
+                                    </a>
+                                }
+                                else
+                                {
+                                    @foreach (var s in Model)
+                                    {
+                                        <a asp-action="EventPromotions" asp-controller="Home" class="banner-slider__slide">
+                                            <img src="@s.ImgPath" alt="@s.Name" class="banner-slider__img">
+                                        </a>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="banner-slider__arrows">
+                            <a href="#" class="banner-slider__prev" id="banner-slider__prev">
+                                <span></span>
+                            </a>
+                            <a href="#" class="banner-slider__next" id="banner-slider__next">
+                                <span></span>
+                            </a>
+                        </div>
+                        <div class="banner-slider__control">
+                            <!-- В этот блок сгенерировать в цикле количество линий равное количеству слайдов -->
+                            @if (Model.Count == 0)
+                            {
+                                <a href="#" class="banner-slider__line" data-slide="1">
+                                    <span></span>
+                                </a>
+                            }
+                            else
+                            {
+                                @for (var i = 1; i <= Model.Count(); i++)
+                                {
+                                    <a href="#" class="banner-slider__line" data-slide="@i">
+                                        <span></span>
+                                    </a>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@*
+<!-- NEW-PRODUCTS-MOBILE -->
+<div class="slick-slider-main-mobile">
+    <div class="new-products-mobile">
+        <div class="new-products-mobile__title">Новинки</div>
+        <div class="slick-new-products-mobile newProductCardsMobile">
+            @foreach (var nl in ViewBag.NewList)
+            {
+            <div class="product-card">
+                <a asp-controller="Home" asp-action="Product" asp-route-Id="@nl.Id">
+                    <h4 class="product-card__title">@nl.Name</h4>
+                </a>
+                <div class="product-card__img">
+                    <img src="@nl.MainImagePath" alt="@nl.Name">
+                    <div class="product-card__new">Новинка!</div>
+                </div>
+
+                <div class="product-card__group">
+                    @if (nl.IsDiscount == true)
+                    {
+                    <span class="product-card__price">
+                        @if (nl.MinPriceDiscount == nl.MaxPriceDiscount)
+                        {
+                        @nl.MaxPriceDiscount  <i class="icon-heart"></i>
+                        }
+                        else
+                        {
+                        @nl.MinPriceDiscount  <i>-</i>  @nl.MaxPriceDiscount  <i class='fas fa-ruble-sign'></i>
+                        }
+                    </span>
+                    }
+                    else
+                    {
+                    <span class="product-card__price">
+                        @if (nl.MinPrice == nl.MaxPrice)
+                        {
+                        @nl.MaxPrice  <i class="icon-heart"></i>
+                        }
+                        else
+                        {
+                        @nl.MinPrice  <i>-</i>  @nl.MaxPrice  <i class='fas fa-ruble-sign'></i>
+                        }
+                    </span>
+                    }
+                    <div>
+                        @if (nl.InFavourites == false)
+                        {
+                        <a href="#" id="addToFavourites" data-productId=" @nl.Id" class="product-card__favourites"><i class="icon-heart"></i></a>
+                        }
+                        else
+                        {
+                        <a href="#" id="removeFromFavourites" data-productId="@nl.Id" class="product-card__favourites product-card__favourites_active"><i class="icon-heart"></i></a>
+                        }
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+    <div class="new-products-mobile">
+        <div class="new-products-mobile__title">Хиты продаж</div>
+        <div class="slick-new-products-mobile hitProductCardsMobile">
+            @foreach (var nl in ViewBag.HitList)
+            {
+            <div class="product-card">
+                <a asp-controller="Home" asp-action="Product" asp-route-Id="@nl.Id">
+                    <h4 class="product-card__title">@nl.Name</h4>
+                </a>
+                <div class="product-card__img">
+                    <img src="@nl.MainImagePath" alt="@nl.Name">
+                    <div class="product-card__hit">Хит!</div>
+                </div>
+
+                <div class="product-card__group">
+                    @if (nl.IsDiscount == true)
+                    {
+                    <span class="product-card__price">
+                        @if (nl.MinPriceDiscount == nl.MaxPriceDiscount)
+                        {
+                        @nl.MaxPriceDiscount  <i class="icon-heart"></i>
+                        }
+                        else
+                        {
+                        @nl.MinPriceDiscount  <i>-</i>  @nl.MaxPriceDiscount  <i class='fas fa-ruble-sign'></i>
+                        }
+                    </span>
+                    }
+                    else
+                    {
+                    <span class="product-card__price">
+                        @if (nl.MinPrice == nl.MaxPrice)
+                        {
+                        @nl.MaxPrice  <i class="icon-heart"></i>
+                        }
+                        else
+                        {
+                        @nl.MinPrice  <i>-</i>  @nl.MaxPrice  <i class='fas fa-ruble-sign'></i>
+                        }
+                    </span>
+                    }
+                    <div>
+                        @if (nl.InFavourites == false)
+                        {
+                        <a href="#" id="addToFavourites" data-productId=" @nl.Id" class="product-card__favourites"><i class="icon-heart"></i></a>
+                        }
+                        else
+                        {
+                        <a href="#" id="removeFromFavourites" data-productId="@nl.Id" class="product-card__favourites product-card__favourites_active"><i class="icon-heart"></i></a>
+                        }
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+</div>
+<!-- NEW-PRODUCTS-MOBILE END -->
+<!-- NEW-PRODUCTS -->
+<section class="new-products slick-slider-main">
+    <div class="product-wrapper">
+        <div class="container">
+            <div class="row">
+                <h2 class="section-title section-title_inblock">Новинки</h2>
+            </div>
+            <div class="row slick-new-products newProductCards">
+                @foreach (var nl in ViewBag.NewList)
+                {
+                <div class="col-3">
+                    <div class="product-card">
+                        <a asp-controller="Home" asp-action="Product" asp-route-Id="@nl.Id">
+                            <h4 class="product-card__title">@nl.Name</h4>
+                        </a>
+                        <div class="product-card__img">
+                            <a asp-controller="Home" asp-action="Product" asp-route-Id="@nl.Id">
+                                <img src="@nl.MainImagePath" alt="@nl.Name">
+                                <div class="product-card__new">Новинка!</div>
+                            </a>
+                        </div>
+
+                        <div class="product-card__group">
+                            @if (nl.IsDiscount == true)
+                            {
+                            <span class="product-card__price">
+                                @if (nl.MinPriceDiscount == nl.MaxPriceDiscount)
+                                {
+                                @nl.MaxPriceDiscount  <i class="icon-heart"></i>
+                                }
+                                else
+                                {
+                                @nl.MinPriceDiscount  <i>-</i>  @nl.MaxPriceDiscount  <i class='fas fa-ruble-sign'></i>
+                                }
+                            </span>
+                            }
+                            else
+                            {
+                            <span class="product-card__price">
+                                @if (nl.MinPrice == nl.MaxPrice)
+                                {
+                                @nl.MaxPrice  <i class="icon-heart"></i>
+                                }
+                                else
+                                {
+                                @nl.MinPrice  <i>-</i>  @nl.MaxPrice  <i class='fas fa-ruble-sign'></i>
+                                }
+                            </span>
+                            }
+                            <div>
+                                @if (nl.InFavourites == false)
+                                {
+                                <a href="#" id="addToFavourites" data-productId=" @nl.Id" class="product-card__favourites"><i class="icon-heart"></i></a>
+                                }
+                                else
+                                {
+                                <a href="#" id="removeFromFavourites" data-productId="@nl.Id" class="product-card__favourites product-card__favourites_active"><i class="icon-heart"></i></a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="product-wrapper">
+        <div class="container">
+            <div class="row">
+                <h2 class="section-title section-title_inblock">Хиты продаж</h2>
+            </div>
+            <div class="row slick-new-products hitProductCards">
+                @foreach (var nl in ViewBag.HitList)
+                {
+                <div class="col-3">
+                    <div class="product-card">
+                        <a asp-controller="Home" asp-action="Product" asp-route-Id="@nl.Id">
+                            <h4 class="product-card__title">@nl.Name</h4>
+                        </a>
+                        <div class="product-card__img">
+                            <img src="@nl.MainImagePath" alt="@nl.Name">
+                            <div class="product-card__hit">Хит!</div>
+                        </div>
+
+                        <div class="product-card__group">
+                            @if (nl.IsDiscount == true)
+                            {
+                            <span class="product-card__price">
+                                @if (nl.MinPriceDiscount == nl.MaxPriceDiscount)
+                                {
+                                @nl.MaxPriceDiscount  <i class="icon-heart"></i>
+                                }
+                                else
+                                {
+                                @nl.MinPriceDiscount  <i>-</i>  @nl.MaxPriceDiscount  <i class='fas fa-ruble-sign'></i>
+                                }
+                            </span>
+                            }
+                            else
+                            {
+                            <span class="product-card__price">
+                                @if (nl.MinPrice == nl.MaxPrice)
+                                {
+                                @nl.MaxPrice  <i class="icon-heart"></i>
+                                }
+                                else
+                                {
+                                @nl.MinPrice  <i>-</i>  @nl.MaxPrice  <i class='fas fa-ruble-sign'></i>
+                                }
+                            </span>
+                            }
+                            <div>
+                                @if (nl.InFavourites == false)
+                                {
+                                <a href="#" id="addToFavourites" data-productId=" @nl.Id" class="product-card__favourites"><i class="icon-heart"></i></a>
+                                }
+                                else
+                                {
+                                <a href="#" id="removeFromFavourites" data-productId="@nl.Id" class="product-card__favourites product-card__favourites_active"><i class="icon-heart"></i></a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+<!-- NEW-PRODUCTS END -->
+<!-- DISCOUNTS -->
+<section class="discounts-mobile">
+        <div class="discount">
+            <img src="~/images/discount-mobile-1.png" alt="Скидка" class="discount__img">
+            <h3 class="discount__title">Скидки до 25% на комплекты постельного белья</h3>
+        </div>
+    </section>
+
+    <section class="discounts">
+        <div class="discount-1">
+            <img src="~/images/discount-1.jpg" alt="Скидка" class="discount-1__img">
+            <h3 class="discount-1__title">Скидки до 25% на комплекты постельного белья</h3>
+        </div>
+        <div class="discount-2">
+            <img src="~/images/discount-2.jpg" alt="Скидка" class="discount-2__img">
+            <h3 class="discount-2__title">Распродажа! Весь август!</h3>
+        </div>
+        <div class="discount-3">
+            <img src="~/images/discount-3.jpg" alt="Скидка" class="discount-3__img">
+            <h3 class="discount-3__title">Акция! 2 подушки по цене одной!</h3>
+        </div>
+    </section>
+<!-- DISCOUNTS END -->
+<!-- ABOUT-US -->
+<section class="about-us">
+    <div class="container">
+        <div class="row">
+            <h2 class="section-title">Краткая информация</h2>
+        </div>
+        <div class="row align-items-center">
+            <div class="col-12">
+                <p class="about-us__text">Добро пожаловать в интернет-магазин "Набитый комод" !</p>
+                <p class="about-us__text">
+                    Мы предлагаем самую разную продукцию домашнего текстиля:
+                    <ul class="about-us__list">
+                        <li>- постельное белье и принадлежности</li>
+                        <li>- одеяла</li>
+                        <li>- подушки</li>
+                        <li>- покрывала</li>
+                        <li>- пледы</li>
+                        <li>- наматрацники</li>
+                        <li>- домашний трикотаж</li>
+                        <li>- полотенца</li>
+                        <li>А также пряжу и товары для рукоделия.</li>
+                    </ul>
+                </p>
+                <p class="about-us__text">
+                    На данный момент на сайте имеется неполный перечень товаров наших магазинов, но мы каждый день работаем над пополнением ассортимента.
+                    Сделать заказ или зарезервировать, не выходя из дома, тот товар, который вас интересует, вы можете,оформив его на сайте, или по номеру телефона <strong>8 (973) 202-09-93</strong>
+                    Мы обязательно поможем с выбором и постараемся сделать так, чтобы вы остались довольны.
+                    Не забывайте оставлять отзывы. Ваше мнение поможет улучшить качество нашего обслуживания в магазинах и на сайте.
+                    Благодарим за внимание!
+                </p>
+            </div>
+            <div class="col-6">
+                    <img src="~/images/img-about.jpg" alt="Картинка о нас" class="about-us__img">
+                </div>
+        </div>
+    </div>
+</section>*@
+<!-- ABOUT-US END -->
+
+
+
+@section scripts
+    {
+    <script>
+        $(document).ready(function () {
+
+            function changeImages() {
+                var images = $('.product-card__img img');
+                images.on('load', function () {
+                    var height = $(this).height();
+                    var width = $(this).width();
+                    if ((height - width) > 0) {
+                        $(this).css({
+                            'width': 'auto',
+                            'height': '100%',
+                            'opacity': '1'
+                        })
+                    }
+                    else {
+                        $(this).css({
+                            'opacity': '1'
+                        })
+                    }
+                });
+            }
+
+            changeImages();
+
+            $(document).on('click', "#addToFavourites", function (e) {
+                e.preventDefault();
+                var product = $(this).attr("data-productId");
+                productId = encodeURIComponent(product);
+                $('.my-alert').load('@Url.Action("AddToFavourites", "Favourites")?id=' + productId);
+                var newHtml = "<a href='#' id='removeFromFavourites' data-productId='" + productId + "' class='product-card__favourites product-card__favourites_active'><i class='icon-heart'></i></a>";
+                $(this).parent().html(newHtml);
+
+                function fadeOutAlert() {
+                    $('#myAlert').alert("close");
+                }
+
+                setTimeout(fadeOutAlert, 3000);
+            });
+
+            $(document).on('click', "#removeFromFavourites", function (e) {
+                e.preventDefault();
+                var product = $(this).attr("data-productId");
+                productId = encodeURIComponent(product);
+                $('.my-alert').load('@Url.Action("RemoveFromFavourites", "Favourites")?id=' + productId);
+                var newHtml = "<a href='#' id='addToFavourites' data-productId='" + productId + "' class='product-card__favourites'><i class='icon-heart'></i></a>";
+                $(this).parent().html(newHtml);
+
+                function fadeOutAlert() {
+                    $('#myAlert').alert("close");
+                }
+
+                setTimeout(fadeOutAlert, 3000);
+            });
+
+            //Слайдер
+            var slideTime = 5000;
+            var slider = $('#banner-slider');
+            var slidesCount = slider.data("slides");
+            var slides = slider.find(".banner-slider__slide");
+            var activeSlide = 0;
+            slider.find(".banner-slider__line:first-child").addClass("banner-slider__line_active");
+
+            var sliderInfinity = setInterval(nextSlide, slideTime);
+
+            slider.mouseenter(function () {
+                clearInterval(sliderInfinity);
+            });
+
+            slider.mouseleave(function () {
+                sliderInfinity = setInterval(nextSlide, slideTime);
+            });
+
+            function nextSlide() {
+                activeSlide++;
+
+                if (activeSlide == slides.length) {
+                    activeSlide = 0;
+                }
+
+                var translateX = activeSlide * 100;
+                slides.each(function (index) {
+                    $(this).css('transform', 'translateX(-' + translateX + '%)');
+                });
+
+                $('.banner-slider__line').removeClass("banner-slider__line_active");
+
+                var activeControl = activeSlide + 1;
+
+                $('.banner-slider__line:nth-child(' + activeControl + ')').addClass("banner-slider__line_active");
+            }
+
+            function prevSlide() {
+                $('.banner-slider__line').removeClass("banner-slider__line_active");
+
+                if (activeSlide == 0) {
+                    activeSlide = slides.length;
+                }
+
+                activeSlide--;
+
+                var translateX = activeSlide * 100;
+                slides.each(function (index) {
+                    $(this).css('transform', 'translateX(-' + translateX + '%)');
+                });
+
+                var activeControl = activeSlide + 1;
+
+                $('.banner-slider__line:nth-child(' + activeControl + ')').addClass("banner-slider__line_active");
+            }
+
+            $(document).on('click', "#banner-slider__prev", function (e) {
+                e.preventDefault();
+                prevSlide();
+            });
+
+            $(document).on('click', "#banner-slider__next", function (e) {
+                e.preventDefault();
+                nextSlide();
+            });
+
+            $(document).on('click', ".banner-slider__line", function (e) {
+                e.preventDefault();
+                $('.banner-slider__line').removeClass("banner-slider__line_active");
+                $(this).addClass("banner-slider__line_active");
+                var slideNumber = $(this).data("slide") - 1;
+
+                var translateX = slideNumber * 100;
+                slides.each(function (index) {
+                    $(this).css('transform', 'translateX(-' + translateX + '%)');
+                });
+                activeSlide = slideNumber;
+            });
+
+
+
+            //$('.slick-slider-main-mobile').slick({
+            //    infinite: true,
+            //    slidesToShow: 1,
+            //    arrows: false,
+            //    dots: true,
+            //    autoplay: true,
+            //    autoplaySpeed: 10000,
+            //    pauseOnHover: true,
+            //    pauseOnFocus: true,
+            //    speed: 1000,
+            //    swipe: false
+            //});
+            //
+            //$('.slick-new-products').slick({
+            //    infinite: true,
+            //    slidesToShow: 4,
+            //    arrows: true
+            //});
+            //
+            //$('.slick-slider-main').slick({
+            //    infinite: true,
+            //    slidesToShow: 1,
+            //    arrows: false,
+            //    dots: true,
+            //    autoplay: true,
+            //    autoplaySpeed: 5000,
+            //    pauseOnHover: true,
+            //    speed: 1000,
+            //    swipe: false
+            //});
+            //
+            //$('.slick-new-products-mobile').slick({
+            //    infinite: true,
+            //    slidesToShow: 1,
+            //    slidesToScroll: 1,
+            //    autoplay: true,
+            //    autoplaySpeed: 2500,
+            //    arrows: false,
+            //    useCSS: true,
+            //    adaptiveHeight: true
+            //});
+        });
+
+    </script>
+}

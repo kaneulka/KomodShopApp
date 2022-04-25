@@ -1,0 +1,1222 @@
+﻿@using Komod.Web.Models.ProductModels
+@using System.Text.RegularExpressions
+@using Newtonsoft.Json;
+@model ProductViewModel
+@{
+    ViewData["Title"] = Model.Title + " - Набитый Комод";
+    ViewData["Description"] = Model.TitleDescription;
+    ViewData["Keywords"] = "магазин интернет Набитый комод Тольятти товар продукт " + Model.Name;
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    string articleImg = "";
+    string articleImgPath = "";
+    var imgs = "";
+    foreach (var img in Model.Images)
+    {
+        imgs += img.Name;
+    }
+    string pattern = @"^[\w|\W]*[/.]jpe?g$";
+
+    ViewBag.ArticlesVM = JsonConvert.SerializeObject(Model.ArticlesVM);
+    ViewBag.PropertyValues = JsonConvert.SerializeObject(Model.PropertyValues);
+    ViewBag.PropertyValCatArts = JsonConvert.SerializeObject(Model.PropertyValCatArts);
+}
+
+<div id="product-in-cart" class="modal-window">
+    <div class="modal-wrapper">
+        <div class="modal-wrapper__header">
+            <p></p>
+            <a href="#close" title="Закрыть" class="close-modal close-in-cart"><span></span></a>
+        </div>
+        <div itemscope="" itemtype="http://schema.org/Service" class="modal-wrapper__body login-form">
+            <p class="text-center">Товар добавлен в корзину</p>
+            <div class="d-flex justify-content-around align-items-center">
+                <a href="#close" class="login-form__btn cart-modal-btn close-in-cart close-modal">Продолжить покупки</a>
+                <a asp-action="Cart" asp-controller="Cart" class="login-form__btn cart-modal-btn">Перейти в корзину</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section itemscope itemtype="http://schema.org/Product" class="product-info">
+
+
+    <div class="product-info-mobile">
+        <div itemprop="name" class="product-info-mobile__title">@Model.Name</div>
+        <div class="product-info-mobile__group">
+            @if (Model.DiscountPercent > 0)
+            {
+                <div class="product-info-mobile__discount">Скидка!</div>
+            }
+            <!--<div>
+                <a id="addToFavourites" href="#" class="product-info-mobile__favourite product-info-mobile__favourite_active"><i class="icon-heart"></i></a>
+                <a id="removeFromFavourites" href="#" class="product-info-mobile__favourite product-info-mobile__favourite_active"><i class="icon-heart"></i></a>
+            </div>-->
+        </div>
+        <div class="product-info-mobile__slider">
+            <img itemprop="image" src="@Model.MainImgPath" alt="@Model.Name-img" class="slb">
+            @foreach (var image in Model.Images)
+            {
+                @if (Regex.IsMatch(image.Name, pattern, RegexOptions.IgnoreCase))
+                {
+                    <img itemprop="image" src="@image.ImgPath" alt="@Model.Name-@image.Name" class="slb">
+                }
+            }
+        </div>
+        <div class="product__info-mobile">
+            <div id="description" class="description description_active">
+                <div class="product__group-mobile">
+                    <strong>Артикул: </strong><span id="article-name-mobile"></span>
+                </div>
+                @if (Model.Brand.Name != "No Brand")
+                {
+                    <div class="product__group-mobile">
+                        <strong>Производитель: </strong><span>@Model.Brand.Name</span>
+                    </div>
+                }
+                @if (Model.Country.Name != "No Country")
+                {
+                    <div class="product__group-mobile">
+                        <strong>Страна: </strong><span>@Model.Country.Name</span>
+                    </div>
+                }
+                <div class="product__group-mobile">
+                    <strong>Цена: </strong><span id="article-price-mobile"></span>
+                </div>
+                <div class="product__group-mobile">
+                    <strong>Количество: <span id="article-quantity-mobile"></span></strong>
+                    <input type="number" name="" value="1" step="1" class="form-control product__input-mobile" id="articleCount" />
+                </div>
+                <a href="#" class="product__cart-btn-mobile btn btn-info disabled" id="article-cart-btn-mobile" data-articleId="0">Добавить в корзину</a>
+            </div>
+        </div>
+        <div class="product-info-mobile__group">
+            <a href="#" class="product-info-mobile__btn-properties product-info-mobile__btn-properties_active">Характеристики</a>
+            <a href="#" class="product-info-mobile__btn-description">Описание</a>
+        </div>
+
+
+
+        <div class="product-info-mobile__properties product-info-mobile__properties_active">
+            <div class="properties-list-mobile">
+                @foreach (var p in Model.Properties)
+                {
+                    <div class="product__group product-prop">
+                        <strong>@p.Name</strong>
+                        <div class="product-prop__values prop-values">
+                            <div class="d-flex flex-wrap prop-values__flex">
+                            @foreach (var pv in Model.PropertyValues)
+                            {
+                                if (pv.PropertyId == p.Id)
+                                {
+                                    <a href="#" class="prop-values__btn" data-propertyValueId="@pv.Id" data-propertyId="@p.Id">@pv.Value&nbsp;</a>
+                                }
+                            }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="colors-list-mobile">
+                @if (Model.CategoriesBred[Model.CategoriesBred.Count - 1].Name != "Пряжа") 
+                {
+                    <h3 style="color: #000; font-size: 18px; text-align: left; margin-bottom: 10px;">Цвета</h3>
+                    <div class="colors-list-mobile__group">
+                        @foreach (var color in Model.Colors)
+                        {
+                            <a href="#" class="colors__btn" title="@color.Name" data-colorId="@color.Id"><div style="background:@color.ColorCode"></div><span></span></a>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+        @*<div class="product-info-mobile__properties product-info-mobile__properties_active properties">
+                @foreach (var article in Model.Articles.OrderBy(a => a.Name).OrderBy(a => a.Price))
+                {
+                <form asp-controller="Cart" asp-action="Buy" id="form-in-cart-mobile-@article.Id"></form>
+                <div class="properties__card">
+                    <div class="properties__group">
+                        <div class="properties__key">Артикул:</div>
+                        <div class="properties__value">
+                            <input type="hidden" name="id" value="@article.Id" form="form-in-cart-mobile-@article.Id" />
+                            @article.Name
+                        </div>
+                    </div>
+                    <div class="properties__group" style="align-items:center;">
+                        <div class="properties__key">Изображение:</div>
+                        <div class="properties__value" style="width:25%;">
+                            @{articleImg = article.Name + ".png"; }
+                            @if (imgs.Contains(articleImg))
+                            {
+                            articleImgPath = "/Files/" + Model.Name + "/" + articleImg;
+                            <img itemprop="image" src="@articleImgPath" alt="@Model.Name-@article.Name-img" class="properties__img slb" style="width:100%">
+                            }
+                        </div>
+                    </div>
+                    <div itemprop="itemListElement" itemscope itemtype="http://schema.org/Product" class="properties__properties">
+                        <strong>Характеристики</strong>
+                        @foreach (var property in Model.Properties)
+                        {
+                            var propertyCheked = false;
+                            @foreach (var propertyValue in property.ArticleProperties)
+                            {
+                                if (property.Id == propertyValue.PropertyId && article.Id == propertyValue.ArticleId)
+                                {
+                                    propertyCheked = true;
+                                }
+                            }
+                            if (propertyCheked)
+                            {
+                                <div itemprop="itemListElement" itemscope itemtype="http://schema.org/Product" class="properties__group">
+                                    <div itemprop="name" class="properties__key">@property.Name:</div>
+                                    <ul class="properties__values">
+                                        @foreach (var propertyValue in property.ArticleProperties.OrderBy(ap => ap.PropertyValue.Name))
+                                        {
+                                            if (property.Id == propertyValue.PropertyId && article.Id == propertyValue.ArticleId)
+                                            {
+                                                <li itemprop="value">@propertyValue.PropertyValue.Name</li>
+                                            }
+                                        }
+                                    </ul>
+                                </div>
+                            }
+                        }
+                    </div>
+                    <div itemscope itemtype="http://schema.org/Offer" class="properties__group">
+                        <div itemprop="name" class="properties__key">Цена: </div>
+                        <div class="properties__value">
+                            @if (Model.DiscountPercent > 0)
+                            {
+                            <del>@article.Price </del>  <span itemprop="price" content="@(article.Price * (1 - Model.DiscountPercent / 100))">@(article.Price * (1 - Model.DiscountPercent / 100))<i itemprop="priceCurrency" content="RUB" class="fas fa-ruble-sign"></i></span>
+                            }
+                            else
+                            {
+                            <span itemprop="price" content="@article.Price">@article.Price <i itemprop="priceCurrency" content="RUB" class="fas fa-ruble-sign"></i></span>
+                            }
+                        </div>
+                    </div>
+                    <div class="properties__group">
+                        <div class="properties__key">Кол-во: </div>
+                        <div class="properties__value properties__count">
+                            <span>Осталось @article.Quantity</span>
+                            <input type="number" class="form-control" form="form-in-cart-mobile-@article.Id" name="quantity" min="1" step="1" value="1" />
+                        </div>
+                    </div>
+                    <div class="properties__group">
+                        <div class="properties__key">В корзину: </div>
+                        <div class="properties__value">
+                            <button class="btn btn-info" type="submit" form="form-in-cart-mobile-@article.Id" asp-for-isDiscount="@Model.Id"><i class="fas fa-shopping-cart"></i></button>
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>*@
+
+        <div class="product-info-mobile__description">@Html.Raw(Model.Description)</div>
+    </div>
+
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="product">
+                    <div class="row">
+                        <div class="col-12">
+                            <div itemscope itemtype="http://schema.org/Product" class="product__breadcrumbs">
+                                @for (var i = Model.CategoriesBred.Count - 1; i > 0; i--)
+                                {
+                                    <a itemprop="url" asp-controller="Home" asp-action="Catalog" asp-route-categoryId="@Model.CategoriesBred[i].Id">@Model.CategoriesBred[i].Name</a><span> ></span>
+                                }
+                                <a itemprop="url" asp-controller="Home" asp-action="Catalog" asp-route-categoryId="@Model.CategoriesBred[0].Id">@Model.CategoriesBred[0].Name</a>
+                            </div>
+                            <h3 class="product__title">@Model.Name</h3>
+                            @if (Model.DiscountPercent > 0)
+                            {
+                                <div class="product__discount">Скидка!</div>
+                            }
+                            <!--<a href="#" class="product__favourite product__favourite_active"><i class="icon-heart"></i></a>-->
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-5">
+                            <div class="product__img-slider img-slider">
+                                <div class="img-slider__group slick-img">
+                                    @foreach (var image in Model.Images)
+                                    {
+
+                                        @if (Regex.IsMatch(image.Name, pattern, RegexOptions.IgnoreCase))
+                                        {
+                                            <img itemprop="image" src="@image.ImgPath" alt="@Model.Name-@image.Name" class="img-slider__img">
+                                        }
+                                    }
+                                </div>
+                                <div class="img-slider__main">
+                                    <img itemprop="image" src="@Model.MainImgPath" alt="@Model.Name-img" class="img-slider__main-img slb">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="product__info">
+                                        <div id="description" class="description description_active">
+                                            <div class="product__group">
+                                                <strong>Артикул: </strong><span id="article-name"></span>
+                                            </div>
+                                            @if (Model.Brand.Name != "No Brand")
+                                            {
+                                                <div class="product__group">
+                                                    <strong>Производитель: </strong><span>&nbsp;@Model.Brand.Name</span>
+                                                </div>
+                                            }
+
+                                            @if (Model.Country.Name != "No Country")
+                                            {
+                                                <div class="product__group">
+                                                    <strong>Страна: </strong><span>&nbsp;@Model.Country.Name</span>
+                                                </div>
+                                            }
+                                            <div class="product__group">
+                                                <strong>Цена: </strong><span id="article-price"></span>
+                                            </div>
+                                            <div class="product__group">
+                                                <div class="d-flex align-items-center">
+                                                    <strong style="width:20%">Количество: <span id="article-quantity"></span></strong>
+                                                    <input type="number" name="" value="1" step="1" class="form-control product__input" id="articleCount" />
+                                                </div>
+                                                <a href="#" class="product__cart-btn btn btn-info disabled" id="article-cart-btn" data-articleId="0">Добавить в корзину</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div id="description" class="description description_active properties-list">
+                                    @foreach (var p in Model.Properties)
+                                    {
+                                        <div class="product__group product-prop">
+                                            <strong>@p.Name</strong>
+                                            <div class="product-prop__values prop-values">
+                                                @*<select class="form-control">
+                                                    @foreach (var pv in Model.PropertyValues)
+                                                    {
+                                                        if (pv.PropertyId == p.Id)
+                                                        {
+                                                            <option value="@pv.Id">@pv.Value</option>
+                                                        }
+                                                    }
+                                                </select>*@
+
+                                                <div class="d-flex flex-wrap">
+                                                    @foreach (var pv in Model.PropertyValues)
+                                                    {
+                                                        if (pv.PropertyId == p.Id)
+                                                        {
+                                                            <a href="#" class="prop-values__btn" data-propertyValueId="@pv.Id" data-propertyId="@p.Id">@pv.Value&nbsp;</a>
+                                                        }
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    @if (Model.CategoriesBred[Model.CategoriesBred.Count - 1].Name != "Пряжа")
+                                    {
+                                        <div class="product__group product-prop" id="colorsProps">
+                                            <strong>Цвет: </strong>
+                                            <div class="product-prop__values colors" id="colors">
+                                                @foreach (var color in Model.Colors)
+                                                {
+                                                    <a href="#" class="colors__btn" title="@color.Name" data-colorId="@color.Id"><div style="background:@color.ColorCode"></div><span></span></a>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="product__info" style="padding: 0">
+                                <div id="description" class="description description_active" style="margin-top: 3vw;">
+                                    <p>@Html.Raw(Model.Description)</p>
+                                </div>
+                            </div>
+                            @*<ul class="product__tabs tabs">
+                                    <li class="tabs__item"><a href="#" class="tabs__link tabs__link_active">Характеристики</a></li>
+                                </ul>
+                                <div class="product__info">
+                                    <div id="properties" class="product__properties property property_active">
+
+                                        <table itemscope itemtype="http://schema.org/ItemList" class="table table-bordered table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Артикул</th>
+                                                    <th>Изображение</th>
+                                                    <th>Характеристики</th>
+                                                    <th>Цена</th>
+                                                    <th>Кол-во</th>
+                                                    <th>В корзину</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var article in Model.Articles.OrderBy(a => a.Name).OrderBy(a => a.Price))
+                                                {
+                                                <tr itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
+                                                    <td>
+                                                        <form asp-controller="Cart" asp-action="Buy" id="form-in-cart-@article.Id"></form>
+                                                        <input itemprop="name" type="hidden" name="id" value="@article.Id" form="form-in-cart-@article.Id" />
+                                                        @article.Name
+                                                    </td>
+                                                    <td style="width:3%">
+                                                        @{articleImg = article.Name + ".png"; }
+                                                        @if (imgs.Contains(articleImg))
+                                                        {
+                                                        articleImgPath = "/Files/" + Model.Name + "/" + articleImg;
+                                                        <img itemprop="image" src="@articleImgPath" alt="@Model.Name-@article.Name-img" class="slb" style="width:33%">
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        @foreach (var property in Model.Properties)
+                                                        {
+                                                        var propertyCheked = false;
+                                                        @foreach (var propertyValue in property.ArticleProperties)
+                                                        {
+                                                        if (property.Id == propertyValue.PropertyId && article.Id == propertyValue.ArticleId)
+                                                        {
+                                                        propertyCheked = true;
+                                                        }
+                                                        }
+                                                        if (propertyCheked)
+                                                        {
+                                                        <div itemscope itemtype="http://schema.org/Product"><strong itemprop="name">@property.Name :</strong></div>
+                                                        <ul>
+                                                            @foreach (var propertyValue in property.ArticleProperties.OrderBy(ap => ap.PropertyValue.Name))
+                                                            {
+                                                            if (property.Id == propertyValue.PropertyId && article.Id == propertyValue.ArticleId)
+                                                            {
+                                                            <li itemprop="value">@propertyValue.PropertyValue.Name</li>
+                                                            }
+                                                            }
+                                                        </ul>
+                                                        }
+                                                        }
+                                                    </td>
+
+                                                    @if (Model.DiscountPercent > 0)
+                                                    {
+                                                    <td itemscope itemtype="http://schema.org/Offer"><del>@article.Price </del> <span itemprop="price" content="@(article.Price * (1 - Model.DiscountPercent / 100))">@(article.Price * (1 - Model.DiscountPercent / 100))<i itemprop="priceCurrency" content="RUB" class="fas fa-ruble-sign"></i></span></td>
+                                                    }
+                                                    else
+                                                    {
+                                                    <td itemscope itemtype="http://schema.org/Offer"><span itemprop="price" content="@article.Price">@article.Price <i itemprop="priceCurrency" content="RUB" class="fas fa-ruble-sign"></i></span></td>
+                                                    }
+
+                                                    <td>
+                                                        <label>Осталось @article.Quantity</label>
+                                                        <input type="number" class="form-control" form="form-in-cart-@article.Id" name="quantity" min="1" step="1" value="1" />
+                                                    </td>
+                                                    <td><button class="btn btn-info" type="submit" form="form-in-cart-@article.Id" asp-for-isDiscount="@Model.Id"><i class="fas fa-shopping-cart"></i></button></td>
+                                                </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>*@
+                        </div>
+                    </div>
+                    @*<div class="col-3">
+
+                            if (Model.IsDiscount == true)
+                            {
+                                   <div class="product__price">
+                                       <span class="product__old-price">@*Model.Price.ToString("#")<i class="fas fa-ruble-sign"></i></span>@*Model.DiscountPrice.ToString("#") <i class="fas fa-ruble-sign"></i>
+                                   </div>
+                            @*}
+                            else
+                            {
+                                   <div class="product__price">@*Model.Price.ToString("#") <i class="fas fa-ruble-sign"></i>
+                                   </div>
+                            }
+
+                        <div class="product__stock-status product__stock-status_yes">Model.StockStatusArticle.Name</div>
+                        <form asp-controller="Cart" asp-action="Buy" class="form-in-cart">
+                            <input type="hidden" asp-for="Id" />
+                            <div class="form-in-cart__group">
+                                <label for="" class="form-in-cart__label">Количество</label>
+                                <div class="form-in-cart__field counter">
+                                    <button class="counter__minus">-</button>
+                                    <input type="number" min="1" max="10000" name="quantity" class="counter__input" value="1">
+                                    <button class="counter__plus">+</button>
+                                </div>
+                            </div>
+                            <button class="form-in-cart__btn" type="submit">В корзину</button>
+                        </form>*@
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section scripts
+    {
+
+    <script>
+        @*
+        let articles = JSON.parse('@Html.Raw(ViewBag.ArticlesVM)');
+        let lpvca = JSON.parse('@Html.Raw(ViewBag.PropertyValCatArts)');
+        console.log(articles);
+        console.log(lpvca);
+
+        var mainImgSliderPath = "";
+
+        function articleInfo(article) {
+            $("#article-name").html(" " + article.Name);
+            $("#article-price").html(" " + article.Price + " руб.");
+    
+            if (article.ImagePath !== null) {
+                mainImgSliderPath = $(".img-slider__main img").attr("src");
+                $(".img-slider__main img").attr("src", article.ImagePath);
+            }
+    
+            $("#article-quantity").html("(осталось " + article.Quantity + " шт)");
+            $("#article-cart-btn").attr("data-articleId", article.Id);
+        }
+
+        function checkProperty(articleId) {
+            let articlePVCA = [];
+            for (let i = 0; i < lpvca.length; i++) {
+                if (lpvca[i].ArticleId === articleId) articlePVCA.push(lpvca[i].PropertyValueId);
+            }
+            $('.prop-values__btn').each(function () {
+                let propertyValueId = parseInt($(this).attr("data-propertyValueId"), 10);
+                if (articlePVCA.includes(propertyValueId)) $(this).addClass("prop-values__btn_active");
+            });
+        }
+
+        $(document).ready(function () {
+
+            $(document).on('click', '.prop-values__btn', function (e) {
+                e.preventDefault();
+                let propertyValueId = parseInt($(this).attr("data-propertyValueId"), 10);
+                let articleIds = [];
+                for (let i = 0; i < lpvca.length; i++) {
+                    if (lpvca[i].PropertyValueId === propertyValueId) {
+                        articleIds.push(lpvca[i].ArticleId);
+                    }
+                }
+
+                $('.prop-values__btn').removeClass('prop-values__btn_active');
+                for (let i = 0; i < articleIds.length; i++) {
+                    checkProperty(articles[i].Id);
+                }
+            });
+        });
+            *@
+    </script>
+
+    <script>
+        var all = [];
+        let articles = JSON.parse('@Html.Raw(ViewBag.ArticlesVM)');
+        let lpvca = JSON.parse('@Html.Raw(ViewBag.PropertyValCatArts)');
+        var filteredArticles = [];
+        var filteredPVCA = lpvca;
+        var propertyValuesChecked = [];
+        var colorIdChecked = 0;
+        //НЕТ
+        function getProductArticle() {
+            var productId = @Model.Id;
+            var url = "/Home/GetProductArticle?productId=" + encodeURIComponent(productId);
+            $.ajax({
+                type: "GET",
+                url: url,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    all = data;
+                    filteredPVCA = lpvca;
+                    console.log(all);
+                    generateColors(data.Colors);
+                    generateColorsMobile(data.Colors);
+                    generateProperties(data.Properties, data.PropertyValues);
+                    generatePropertiesMobile(data.Properties, data.PropertyValues);
+                },
+                failure: function (data) {
+                    alert(data.responseText);
+                },
+                error: function (data) {
+                    alert(data.responseText);
+                }
+            });
+        }
+        //НЕТ
+        function generateColors(list) {
+            if (list.length == 0) {
+                $("#colorsProps").html("");
+            }
+            else {
+                var colorList = '';
+                $.each(list, function (i, item) {
+                    colorList += `<a href="#" class="colors__btn" title="` + item.Name + `" data-colorId="` + item.Id + `"><div style="background:` + item.ColorCode + `"></div><span></span></a>`;
+                });
+                $("#colors").append(colorList);
+            }
+        }
+        function generateColorsMobile(list) {
+            if (list.length == 0) {
+                $(".colors-list-mobile").html("");
+            }
+            else {
+                var colorList = `<h3 style="color: #000; font-size: 18px; text-align: left; margin-bottom: 10px;">Цвета</h3>
+                                    <div class="colors-list-mobile__group">`;
+                $.each(list, function (i, item) {
+                    colorList += `<a href="#" class="colors__btn" title="` + item.Name + `" data-colorId="` + item.Id + `"><div style="background:` + item.ColorCode + `"></div><span></span></a>`;
+                });
+                colorList += `</div>`
+                $(".colors-list-mobile").append(colorList);
+            }
+        }
+        //НЕТ
+        function generateProperties(listProperties, listPropertyValues) {
+            var properties = '';
+            $.each(listProperties, function (i, props) {
+                properties += `<div class="product__group product-prop">
+                                   <strong>` + props.Name + `</strong>
+                                   <div class="product-prop__values prop-values">
+                                       <div class="d-flex flex-wrap">`;
+                $.each(listPropertyValues, function (i, propsVal) {
+                    if (propsVal.PropertyId === props.Id) {
+                        properties += `<a href="#" class="prop-values__btn btn btn-sm btn-outline-info" data-propertyValueId="` + propsVal.Id + `" data-propertyId=` + props.Id + ` style="pointer-events: auto">` + propsVal.Value + `</a>`;
+                    }
+                });
+                properties += `        </div>
+                                   </div>
+                               </div>`;
+            });
+            $(".properties-list").prepend(properties);
+        }
+        function generatePropertiesMobile(listProperties, listPropertyValues) {
+            var properties = '';
+            $.each(listProperties, function (i, props) {
+                properties += `<div class="product__group product-prop" style="text-align: left; margin-bottom: 20px;">
+                                   <strong style="margin-bottom: 10px">` + props.Name + `</strong>
+                                   <div class="product-prop__values prop-values">
+                                       <div class="d-flex flex-wrap">`;
+                $.each(listPropertyValues, function (i, propsVal) {
+                    if (propsVal.PropertyId === props.Id) {
+                        properties += `<a href="#" class="prop-values__btn btn btn-sm btn-outline-info" data-propertyValueId="` + propsVal.Id + `" data-propertyId=` + props.Id + ` style="pointer-events: auto">` + propsVal.Value + `</a>`;
+                    }
+                });
+                properties += `        </div>
+                                   </div>
+                               </div>`;
+            });
+            $(".properties-list-mobile").prepend(properties);
+        }
+        var mainImgSliderPath = "";
+        function generateArticle() {
+            var articleIndex = articles.findIndex(a => a.Id == filteredArticles[0]);
+            $("#article-name").html(" " + articles[articleIndex].Name);
+
+            //Скидка
+            var discount = 1;
+            var day = new Date();
+            var dayOfWeek = day.getDay();
+            switch (dayOfWeek) {
+                case '0':
+                    if ("@(Model.DayOfWeek)" === "Sunday") discount = @(Model.DiscountPercent / 100);
+                    break;
+                case '1':
+                    if ("@(Model.DayOfWeek)" === "Monday") discount = @(Model.DiscountPercent / 100);
+                    break;
+                case '2':
+                    if ("@(Model.DayOfWeek)" === "Tuesday") discount = @(Model.DiscountPercent / 100);
+                    break;
+                case '3':
+                    if ("@(Model.DayOfWeek)" === "Wednesday") discount = @(Model.DiscountPercent / 100);
+                    break;
+                case '4':
+                    if ("@(Model.DayOfWeek)" === "Thursday") discount = @(Model.DiscountPercent / 100);
+                    break;
+                case '5':
+                    if ("@(Model.DayOfWeek)" === "Friday") discount = @(Model.DiscountPercent / 100);
+                    break;
+                case '6':
+                    if ("@(Model.DayOfWeek)" === "Saturday") discount = @(Model.DiscountPercent / 100);
+                    break;
+            }
+
+
+            $("#article-price").html(" " + (articles[articleIndex].Price * discount) + " руб.");
+            if (articles[articleIndex].ImagePath !== null) {
+                mainImgSliderPath = $(".img-slider__main img").attr("src");
+                $(".img-slider__main img").attr("src", articles[articleIndex].ImagePath);
+            }
+            $("#article-quantity").html("(осталось " + articles[articleIndex].Quantity + " шт)");
+            $("#article-cart-btn").attr("data-articleId", articles[articleIndex].Id);
+            $("#article-cart-btn").removeClass("disabled");
+        }
+        function generateArticleMobile() {
+            var articleIndex = articles.findIndex(a => a.Id == filteredArticles[0]);
+            $("#article-name-mobile").html(" " + articles[articleIndex].Name);
+
+            //Скидка
+            var discount = 1;
+            var day = new Date();
+            var dayOfWeek = day.getDay();
+            switch (dayOfWeek) {
+                case '0':
+                    if ("@(Model.DayOfWeek)" === "Sunday") discount = @(Model.DiscountPercent / 100);
+                    break;
+                case '1':
+                    if ("@(Model.DayOfWeek)" === "Monday") discount = @(Model.DiscountPercent / 100);
+                    break;
+                case '2':
+                    if ("@(Model.DayOfWeek)" === "Tuesday") discount = @(Model.DiscountPercent / 100);
+                    break;
+                case '3':
+                    if ("@(Model.DayOfWeek)" === "Wednesday") discount = @(Model.DiscountPercent / 100);
+                    break;
+                case '4':
+                    if ("@(Model.DayOfWeek)" === "Thursday") discount = @(Model.DiscountPercent / 100);
+                    break;
+                case '5':
+                    if ("@(Model.DayOfWeek)" === "Friday") discount = @(Model.DiscountPercent / 100);
+                    break;
+                case '6':
+                    if ("@(Model.DayOfWeek)" === "Saturday") discount = @(Model.DiscountPercent / 100);
+                    break;
+            }
+
+            $("#article-price-mobile").html(" " + (articles[articleIndex].Price * (1 - discount)) + " руб.");
+            if (articles[articleIndex].ImagePath !== null) {
+                mainImgSliderPath = $(".product-info-mobile__slider img").attr("src");
+                $(".product-info-mobile__slider img").attr("src", articles[articleIndex].ImagePath);
+            }
+            $("#article-quantity-mobile").html("(осталось " + articles[articleIndex].Quantity + " шт)");
+            $("#article-cart-btn-mobile").attr("data-articleId", articles[articleIndex].Id);
+            $("#article-cart-btn-mobile").removeClass("disabled");
+        }
+        function clearArticle() {
+            $("#article-name").html("");
+            $("#article-price").html("");
+            $("#article-quantity").html("");
+            if (mainImgSliderPath !== "") $(".img-slider__main img").attr("src", mainImgSliderPath);
+            $("#article-cart-btn").attr("data-articleId", 0);
+            $("#article-cart-btn").addClass("disabled");
+        }
+        function clearArticleMobile() {
+            $("#article-name-mobile").html("");
+            $("#article-price-mobile").html("");
+            $("#article-quantity-mobile").html("");
+            if (mainImgSliderPath !== "") $(".product-info-mobile__slider img").attr("src", mainImgSliderPath);
+            $("#article-cart-btn-mobile").attr("data-articleId", 0);
+            $("#article-cart-btn-mobile").addClass("disabled");
+        }
+
+        function clearAllPC() {
+            $('.prop-values__btn').removeClass('prop-values__btn_active');
+            $('.prop-values__btn').removeClass('prop-values__btn_disabled');
+            $('.colors__btn').removeClass("colors__btn_disable");
+            filteredArticles = [];
+            filteredPVCA = lpvca;
+            propertyValuesChecked = [];
+            colorIdChecked = 0;
+        }
+
+        $(document).ready(function () {
+            //добавление товара в корзину
+            $(document).on('click', "#article-cart-btn", function (e) {
+                var articleIndex = articles.findIndex(a => a.Id == filteredArticles[0]);
+                var articleCount = $("#articleCount").val();
+                if (articles[articleIndex].Quantity < articleCount) {
+                    articleCount = articles[articleIndex].Quantity;
+                }
+                var quantityCartItems = parseInt($('#cartQuantityMobile span').attr('data-quantityCart'), 10) + parseInt(articleCount, 10);
+                if (isNaN(quantityCartItems)) {
+                    quantityCartItems = parseInt(articleCount, 10);
+                }
+                e.preventDefault();
+                var articleId = $(this).attr('data-articleId');
+                var url = "/Cart/Add?id=" + encodeURIComponent(articleId) + "&quantity=" + encodeURIComponent(articleCount);
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        var totalCartItems = "<span data-quantityCart='" + quantityCartItems + "'>" + quantityCartItems + "</span>"
+                        $('#cartQuantityMobile').html(totalCartItems);
+                        $('#cartQuantity').html(totalCartItems);
+                        $('#product-in-cart').css({
+                            "pointer-events": "auto",
+                            "opacity": "1",
+                            "-webkit-transform": "scale(1)",
+                            "-ms-transform": "scale(1)",
+                            "transform": "scale(1)",
+                        });
+                        $('#product-in-cart .modal-wrapper').css({
+                            "width": "30%",
+                            "opacity": "1",
+                            "-webkit-transform": "translateY(0%)",
+                            "-ms-transform": "translateY(0%)",
+                            "transform": "translateY(0%)",
+                        });
+                        $('#product-in-cart p').css({
+                            "font-size": "calc(1.5vw * 0.75)",
+                            "margin-bottom": "1vw"
+                        });
+                    },
+                    failure: function (data) {
+                        alert(data.responseText);
+                    },
+                    error: function (data) {
+                        alert(data.responseText);
+                    }
+                });
+            });
+            $(document).on('click', "#article-cart-btn-mobile", function (e) {
+                var articleIndex = articles.findIndex(a => a.Id == filteredArticles[0]);
+                var articleCount = $("#articleCount").val();
+                if (articles[articleIndex].Quantity < articleCount) {
+                    articleCount = articles[articleIndex].Quantity;
+                }
+                var quantityCartItems = parseInt($('#cartQuantityMobile span').attr('data-quantityCart'), 10) + parseInt(articleCount, 10);
+                if (isNaN(quantityCartItems)) {
+                    quantityCartItems = parseInt(articleCount, 10);
+                }
+                e.preventDefault();
+                var articleId = $(this).attr('data-articleId');
+                var url = "/Cart/Add?id=" + encodeURIComponent(articleId) + "&quantity=" + encodeURIComponent(articleCount);
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        var totalCartItems = "<span data-quantityCart='" + quantityCartItems + "'>" + quantityCartItems + "</span>"
+                        $('#cartQuantityMobile').html(totalCartItems);
+                        $('#cartQuantity').html(totalCartItems);
+                        $('#product-in-cart').css({
+                            "pointer-events": "auto",
+                            "opacity": "1",
+                            "-webkit-transform": "scale(1)",
+                            "-ms-transform": "scale(1)",
+                            "transform": "scale(1)",
+                        });
+                        $('#product-in-cart .modal-wrapper').css({
+                            "width": "100%",
+                            "opacity": "1",
+                            "-webkit-transform": "translateY(0%)",
+                            "-ms-transform": "translateY(0%)",
+                            "transform": "translateY(0%)",
+                        });
+                        $('#product-in-cart p').css({
+                            "font-size": "18px",
+                            "margin-bottom": "10px"
+                        });
+                        $('#product-in-cart a').css({
+                            "margin-bottom": "10px !important",
+                            "display": "inline-block"
+                        });
+                    },
+                    failure: function (data) {
+                        alert(data.responseText);
+                    },
+                    error: function (data) {
+                        alert(data.responseText);
+                    }
+                });
+            });
+            $('.close-in-cart').on('click', function () {
+                $('#product-in-cart').css({
+                    "pointer-events": "none",
+                    "opacity": "0",
+                });
+                $('#product-in-cart .modal-wrapper').css({
+                    "opacity": "0",
+                    "-webkit-transform": "translateY(-400%)",
+                    "-ms-transform": "translateY(-400%)",
+                    "transform": "translateY(-400%)",
+                });
+            });
+        //НЕТ
+            //getProductArticle();
+            $('.slb').simplebox({
+                fadeSpeed: 300, // default is 400ms, applied to all fade animations in the plugin
+                darkMode: true, // default is false
+                postfix: "_full", // default is ""
+                hqClass: "highres" // default is "hq"
+            });
+            $('.slick-img').slick({
+                vertical: true,
+                infinite: false,
+                slidesToShow: 4,
+                swipeToSlide: true,
+                arrows: true,
+                verticalSwiping: true
+            });
+            $('.product-info-mobile__slider').slick({
+                infinite: true,
+                slidesToShow: 1,
+                swipeToSlide: true,
+                arrows: true,
+                autoplay: true,
+                autoplaySpeed: 2500,
+                dots: true
+            });
+            $(document).on('click', "#addToFavourites", function (e) {
+                e.preventDefault();
+                var product = $(this).attr("data-productId");
+                productId = encodeURIComponent(product);
+                $('.my-alert').load('/******************************************/?id=' + productId);
+                var newHtml = "<a href='#' id='removeFromFavourites' data-productId='" + productId + "' class='product-card__favourites product-card__favourites_active'><i class='icon-heart'></i></a>";
+                $(this).parent().html(newHtml);
+                function fadeOutAlert() {
+                    $('#myAlert').alert("close");
+                }
+                setTimeout(fadeOutAlert, 3000);
+            });
+            $(document).on('click', "#removeFromFavourites", function (e) {
+                e.preventDefault();
+                var product = $(this).attr("data-productId");
+                productId = encodeURIComponent(product);
+                $('.my-alert').load('/***********************************************/?id=' + productId);
+                var newHtml = "<a href='#' id='addToFavourites' data-productId='" + productId + "' class='product-card__favourites'><i class='icon-heart'></i></a>";
+                $(this).parent().html(newHtml);
+                function fadeOutAlert() {
+                    $('#myAlert').alert("close");
+                }
+                setTimeout(fadeOutAlert, 3000);
+            });
+
+            //ДАЛЬШЕ МОЖНО
+            $(document).on('click', ".prop-values__btn", function (e) {
+                e.preventDefault();
+                var propertyId = $(this).attr("data-propertyId");
+                var propertyValueId = $(this).attr("data-propertyValueId");
+                var pv = {
+                    "PropertyValueId": propertyValueId,
+                    "PropertyId": propertyId
+                };
+                //var filterPVsInPVCA = [];
+                //for (var i = 0; i < filteredPVCA.length; i++) {
+                //    filterPVsInPVCA.push(filteredPVCA[i].PropertyValueId)
+                //}
+
+                if ($(this).hasClass('prop-values__btn_disabled')) {
+                    clearAllPC();
+                }
+
+                var pvIndex = propertyValuesChecked.findIndex(elem => elem.PropertyValueId === pv.PropertyValueId && elem.PropertyId === pv.PropertyId);
+                if (pvIndex != -1) {
+                    filteredPVCA = lpvca;
+                    propertyValuesChecked.splice(pvIndex, 1);
+                    $(".prop-values__btn").each(function () {
+                        if ($(this).attr("data-propertyId") == pv.PropertyId) {
+                            if ($(this).attr("data-propertyValueId") != pv.PropertyValueId) {
+                                if ($.inArray($(this).attr("data-propertyValueId"), filteredPVCA) != -1)
+                                    $(this).removeClass("prop-values__btn_disabled");
+                            }
+                            else {
+                                $(this).removeClass("prop-values__btn_active");
+                            }
+                        }
+                    });
+                    uncheckButtons();
+                }
+                else {
+                    propertyValuesChecked.push(pv);
+                    for (var i = 0; i < propertyValuesChecked.length; i++) {
+                        $(".prop-values__btn").each(function () {
+                            if ($(this).attr("data-propertyId") == propertyValuesChecked[i].PropertyId) {
+                                if ($(this).attr("data-propertyValueId") != propertyValuesChecked[i].PropertyValueId) {
+                                    $(this).addClass("prop-values__btn_disabled");
+                                }
+                                else {
+                                    $(this).addClass("prop-values__btn_active");
+                                }
+                            }
+                        });
+                    }
+                    checkButtons();
+                }
+                if (filteredArticles.length == 1) {
+                    generateArticle();
+                    generateArticleMobile();
+                }
+                else {
+                    clearArticle();
+                    clearArticleMobile();
+                }
+            });
+            $(document).on('click', ".colors__btn", function (e) {
+                e.preventDefault();
+                if ($(this).hasClass("colors__btn_disable")) {
+                    clearAllPC();
+                }
+                var colorId = $(this).attr("data-colorId");
+                if (colorIdChecked == colorId) {
+                filteredPVCA = lpvca;
+                    //$(".colors__btn").each(function () {
+                    //    if ($(this).attr("data-colorId") == colorIdChecked) {
+                    //        $(this).removeClass("colors__btn_active");
+                    //    }
+                    //    //else {
+                    //    //    $(this).removeClass("colors__btn_disable");
+                    //    //}
+                    //});
+                    colorIdChecked = 0;
+                    uncheckButtons();
+                }
+                else {
+                    colorIdChecked = colorId;
+                    //$(".colors__btn").each(function () {
+                    //    if ($(this).attr("data-colorId") == colorIdChecked) {
+                    //        $(this).addClass("colors__btn_active");
+                    //    }
+                    //    //else {
+                    //    //    $(this).addClass("colors__btn_disable");
+                    //    //}
+                    //});
+                    checkButtons();
+                }
+                if (filteredArticles.length == 1) {
+                    generateArticle();
+                    generateArticleMobile();
+                }
+                else {
+                    clearArticle();
+                    clearArticleMobile();
+                }
+            });
+        });
+        //function filterProps() {
+        //
+        //    if (propertyValuesChecked.length == 0 && colorIdChecked == 0) {
+        //        filteredPVCA = lpvca;
+        //        filteredArticles = [];
+        //        return;
+        //    }
+        //
+        //    if (propertyValuesChecked.length != 0) {
+        //        //for (var i = 0; i < lpvca.length; i++) {
+        //        //    if (lpvca[i].PropertyValueId == propertyValuesChecked[0].PropertyValueId) {
+        //        //        filteredArticles.push(lpvca[i].ArticleId);
+        //        //    }
+        //        //}
+        //
+        //        var newFilteredArticles = [];
+        //
+        //        for (var i = 0; i < propertyValuesChecked.length; i++) {
+        //            for (var j = 0; j < lpvca.length; j++) {
+        //                if (lpvca[j].PropertyValueId == propertyValuesChecked[i].PropertyValueId) {
+        //                    if ($.inArray(lpvca[j].ArticleId, newFilteredArticles) == -1) newFilteredArticles.push(lpvca[j].ArticleId);
+        //                }
+        //            }
+        //        }
+        //        filteredArticles = newFilteredArticles;
+        //    }
+        //
+        //    if (colorIdChecked > 0) {
+        //        var newFilteredArticles = [];
+        //        for (var i = 0; i < articles.length; i++) {
+        //            if ($.inArray(articles[i].Id, filteredArticles) >= 0 && articles[i].ColorId == colorIdChecked) {
+        //                newFilteredArticles.push(articles[i].Id);
+        //            }
+        //        }
+        //        filteredArticles = newFilteredArticles;
+        //    }
+        //
+        //    var newFilteredPVCA = [];
+        //    for (var i = 0; i < lpvca.length; i++) {
+        //        if ($.inArray(lpvca[i].ArticleId, filteredArticles) >= 0) {
+        //            newFilteredPVCA.push(lpvca[i]);
+        //        }
+        //    }
+        //    filteredPVCA = newFilteredPVCA;
+        //}
+        //
+        //function disableProps() {
+        //    var newPropertyValueIdsChecked = [];
+        //    var newPropertyChecked = [];
+        //    for (var i = 0; i < propertyValuesChecked.length; i++) {
+        //        newPropertyValueIdsChecked.push(propertyValuesChecked[i].PropertyValueId);
+        //        newPropertyChecked.push(propertyValuesChecked[i].PropertyId);
+        //    }
+        //
+        //
+        //    $(".prop-values__btn").each(function () {
+        //        var propertyId = "" + $(this).attr("data-propertyId");
+        //        var propertyValueId = "" + $(this).attr("data-propertyValueId");
+        //
+        //        var inPVCA = false;
+        //
+        //        var articleId = 0;
+        //        var articleColorId = 0;
+        //
+        //        for (var i = 0; i < filteredPVCA.length; i++) {
+        //            if (filteredPVCA[i].PropertyValueId == propertyValueId) {
+        //                inPVCA = true;
+        //                articleId = filteredPVCA[i].ArticleId;
+        //            }
+        //        }
+        //
+        //        for (var i = 0; i < articles.length; i++) {
+        //            if (articles[i].Id == articleId) {
+        //                articleColorId = articles[i].ColorId;
+        //            }
+        //        }
+        //
+        //        if ($.inArray(propertyValueId, newPropertyValueIdsChecked) == -1 && $.inArray(propertyId, newPropertyChecked) == -1) {
+        //            if (inPVCA == false) $(this).addClass("disabled")
+        //            else {
+        //                if (articleColorId != colorIdChecked)
+        //                $(this).removeClass("disabled");
+        //            }
+        //        }
+        //
+        //
+        //    });
+        //}
+        //Выбрали свойство
+        function checkButtons() {
+            filtertUpdate();
+            var propertiesId = [];
+            var propertyValuesId = [];
+            var colorsId = [];
+            for (var i = 0; i < propertyValuesChecked.length; i++) {
+                propertiesId.push(propertyValuesChecked[i].PropertyId);
+            }
+            for (var i = 0; i < filteredPVCA.length; i++) {
+                propertyValuesId.push(filteredPVCA[i].PropertyValueId);
+            }
+            for (var i = 0; i < articles.length; i++) {
+                if ($.inArray(articles[i].Id, filteredArticles) >= 0) {
+                    colorsId.push(articles[i].ColorId);
+                }
+            }
+            $(".prop-values__btn").each(function () {
+                var pID = parseInt($(this).attr("data-propertyId"), 10);
+                var pvID = parseInt($(this).attr("data-propertyValueId"), 10);
+                if ($.inArray(pID, propertiesId) == -1 && $.inArray(pvID, propertyValuesId) == -1)
+                    $(this).addClass("prop-values__btn_disabled");
+            });
+            $(".colors__btn").each(function () {
+                var cID = parseInt($(this).attr("data-colorId"), 10);
+                if ($.inArray(cID, colorsId) == -1)
+                    $(this).addClass("colors__btn_disable");
+            });
+        }
+        //Выключили свойство
+        function uncheckButtons() {
+            filtertUpdate();
+            var propertiesId = [];
+            var propertyValuesId = [];
+            var colorsId = [];
+            for (var i = 0; i < propertyValuesChecked.length; i++) {
+                propertiesId.push(propertyValuesChecked[i].PropertyId);
+            }
+            for (var i = 0; i < filteredPVCA.length; i++) {
+                propertyValuesId.push(filteredPVCA[i].PropertyValueId);
+            }
+            for (var i = 0; i < articles.length; i++) {
+                if ($.inArray(articles[i].Id, filteredArticles) >= 0) {
+                    colorsId.push(articles[i].ColorId);
+                }
+            }
+            $(".prop-values__btn").each(function () {
+                var pID = parseInt($(this).attr("data-propertyId"), 10);
+                var pvID = parseInt($(this).attr("data-propertyValueId"), 10);
+                if ($.inArray(pID, propertiesId) == -1 && $.inArray(pvID, propertyValuesId) >= 0)
+                    $(this).removeClass("prop-values__btn_disabled");
+            });
+            $(".colors__btn").each(function () {
+                var cID = parseInt($(this).attr("data-colorId"), 10);
+                if ($.inArray(cID, colorsId) != -1) {
+                    $(this).removeClass("colors__btn_disable");
+                }
+            });
+        }
+        function articleAdded(articleId, articleProperties) {
+            return articleProperties.some(function (el) {
+                return el.articleId === articleId;
+            });
+        }
+        //Обновление filteredPVCA и filteredArticles
+        function filtertUpdate() {
+            if (propertyValuesChecked.length == 0 && colorIdChecked == 0) {
+                filteredPVCA = lpvca;
+                filteredArticles = [];
+                for (var i = 0; i < articles.length; i++) {
+                    if ($.inArray(articles[i].Id, filteredArticles) == -1) {
+                        filteredArticles.push(articles[i].Id);
+                    }
+                }
+            }
+            else {
+                var newFilteredArticles = [];
+                var articleProperties = [];
+                for (var i = 0; i < filteredPVCA.length; i++) {
+                    var articleId = filteredPVCA[i].ArticleId;
+                    var propertyValueId = filteredPVCA[i].PropertyValueId;
+                    if (!articleAdded(articleId, articleProperties)) {
+                        articleProperties.push({ articleId: articleId, propertyValueIds: [propertyValueId] });
+                    }
+                    else {
+                        var index = articleProperties.findIndex(i => i.articleId === articleId)
+                        articleProperties[index].propertyValueIds.push(propertyValueId);
+                    }
+                }
+                //Выделим свойсва
+                var propertyValueCheckedIds = [];
+                for (var i = 0; i < propertyValuesChecked.length; i++) {
+                    propertyValueCheckedIds.push(parseInt(propertyValuesChecked[i].PropertyValueId, 10));
+                }
+                //Проверка свойств
+                for (var i = 0; i < articleProperties.length; i++) {
+                    var articlePropertyValueIds = [];
+                    for (var j = 0; j < articleProperties[i].propertyValueIds.length; j++) articlePropertyValueIds.push(articleProperties[i].propertyValueIds[j]);
+                    if ((contains(articlePropertyValueIds, propertyValueCheckedIds) && $.inArray(articleProperties[i].articleId, newFilteredArticles) == -1))
+                        newFilteredArticles.push(articleProperties[i].articleId);
+                }
+                //for (var j = 0; j < filteredPVCA.length; j++) {
+                //    if (filteredPVCA[j].PropertyValueId == propertyValuesChecked[i].PropertyValueId) {
+                //        if ($.inArray(filteredPVCA[j].ArticleId, newFilteredArticles) == -1) newFilteredArticles.push(filteredPVCA[j].ArticleId);
+                //    }
+                //}
+                filteredArticles = newFilteredArticles;
+                //Проверка цвета
+                if (colorIdChecked != 0) {
+                    var newNewFilteredArticles = [];
+                    for (var i = 0; i < articles.length; i++) {
+                        //if ($.inArray(articles[i].Id, filteredArticles) >= 0 && articles[i].ColorId == colorIdChecked) {
+                        //console.log(articles[i].ColorId == colorIdChecked);
+                        //console.log($.inArray(articles[i].Id, newFilteredArticles));
+                        if (articles[i].ColorId == colorIdChecked && $.inArray(articles[i].Id, newFilteredArticles) != -1) {
+                            newNewFilteredArticles.push(articles[i].Id);
+                            //if ($.inArray(articles[i].Id, newFilteredArticles) == -1) newNewFilteredArticles.push(articles[i].Id);
+                        }
+                    }
+                    //Приравнять полученые артикулы
+                    filteredArticles = newNewFilteredArticles;
+                }
+                var newFiltredPVCA = [];
+                //Найти PVCA
+                for (var i = 0; i < lpvca.length; i++) {
+                    if ($.inArray(lpvca[i].ArticleId, filteredArticles) >= 0)
+                        //Не нужна проверка, все уникальны
+                        newFiltredPVCA.push(lpvca[i]);
+                }
+                filteredPVCA = newFiltredPVCA;
+            }
+        }
+        function contains(where, what) {
+            for (var i = 0; i < what.length; i++) {
+                if (where.indexOf(what[i]) == -1) return false;
+            }
+            return true;
+        }
+    </script>
+
+}

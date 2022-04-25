@@ -1,0 +1,49 @@
+﻿@using Komod.Web.Models.EventPromotionModels
+@model List<EventPromotionViewModel>
+@{
+    ViewData["Title"] = "Акции в магазине Набитый Комод";
+    ViewData["Description"] = "Текущии акции в нашем интернет-магазинах Набитый Комод в городе Тольятти.";
+    ViewData["Keywords"] = "акции магазин интернет скидки распродажа Набитый комод Тольятти";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+<!-- REVIEWS -->
+<section class="main-about-us">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="section-title">Акции</h2>
+            </div>
+        </div>
+    </div>
+    <div class="section-wrapper reviews">
+        <div class="container">
+            <div class="row event-promotions-block">
+                @foreach (var p in Model)
+                {
+                    <div itemscope itemtype="http://schema.org/Intangible" class="col-6 event-promotion-block">
+                        <div itemscope itemtype="http://schema.org/Offer" class="event-promotion">
+                            <img src="@p.ImgPath" alt="@p.Name" />
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+@section scripts
+    {
+    <script>
+
+        $(document).ready(function () {
+            $('.event-promotion img').simplebox({
+                fadeSpeed: 300, // default is 400ms, applied to all fade animations in the plugin
+                darkMode: true, // default is false
+                postfix: "_full", // default is ""
+                hqClass: "highres" // default is "hq"
+            });
+        });
+
+    </script> 
+    }

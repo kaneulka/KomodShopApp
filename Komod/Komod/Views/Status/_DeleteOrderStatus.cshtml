@@ -1,0 +1,13 @@
+﻿@model OrderStatusViewModel
+@using Komod.Web.Models.StatusModels
+@using Komod.Web.Models
+
+<form asp-action="DeleteOrderStatus" role="form">
+    @Html.Partial("_ModalHeader", new ModalHeader { Heading = "Удаление статуса продукта" })
+
+    <div class="modal-body">
+        <input asp-for="Id" />
+        Вы уверены, что хотите удалить @Model.Name?
+    </div>
+    @Html.Partial("_ModalFooter", new ModalFooter { SubmitButtonText = "Удалить" })
+</form>

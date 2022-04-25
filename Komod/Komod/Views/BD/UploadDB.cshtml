@@ -1,0 +1,81 @@
+﻿
+@{
+    ViewData["Title"] = "UploadDB";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+    <div class="container-fluid">
+        <div class="fade-in">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-lg-12">
+                                    <form class="form-inline mt-3 mb-3" asp-action="UploadDB" asp-controller="BD" method="post" enctype="multipart/form-data">
+                                        <div class="form-group">
+                                            <label class="col-form-label">Файл для загрузки БД</label>
+                                            <input class="ml-3" type="file" name="uploadedFile" />
+                                        </div>
+                                        <div class="form-group">
+                                            <button type="submit" class="btn btn-success btn-pill">Загрузить</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="fade-in">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-lg-12">
+                                    <form class="form-inline mt-3 mb-3" asp-action="UpdateDB" asp-controller="BD" method="post" enctype="multipart/form-data">
+                                        <div class="form-group">
+                                            <label class="col-form-label">Файл для обновления БД</label>
+                                            <input class="ml-3" type="file" name="uploadedFile" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-form-label">Столбец с колличеством</label>
+                                            <input class="ml-3" type="text" name="quantityColumn" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-form-label">Столбец с ценой</label>
+                                            <input class="ml-3" type="text" name="priceColumn" />
+                                        </div>
+                                        <div class="form-group">
+                                            <button type="submit" class="btn btn-success btn-pill">Загрузить</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts
+    {
+    <script type="text/javascript">
+
+        $(function () {
+            $.ajaxSetup({ cache: false });
+            $(".modal-window").click(function (e) {
+
+                e.preventDefault();
+                $.get(this.href, function (data) {
+                    $('#dialogContent').html(data);
+                    $('#modal-action-admin').modal('show');
+                });
+            });
+        })
+    </script>
+}

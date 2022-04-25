@@ -1,0 +1,24 @@
+﻿@model PropertyViewModel
+@using Komod.Web.Models.PropertyModels
+@using Komod.Web.Models
+
+<form asp-action="EditProperty" role="form">
+    @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Редактировать характеристику" })
+    <div class="modal-body form-horizontal">
+        <div class="row">
+            <div class="col-12">
+                <input asp-for="Id" />
+                <div class="form-group">
+                    <span asp-validation-for="Name"></span><br />
+                    <label asp-for="Name"></label>
+                    <input asp-for="Name" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="ValueName"></label>
+                    <input asp-for="ValueName" class="form-control" />
+                </div>
+            </div>
+        </div>
+    </div>
+    @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
+</form>

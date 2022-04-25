@@ -1,0 +1,58 @@
+﻿@model PromocodeArticleModel
+@using Komod.Web.Models.PromocodeModels
+@using Komod.Web.Models
+
+<form asp-action="AddPromocodeToProduct" role="form">
+    @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Добавить промокод к товарам" })
+    <div class="modal-body form-horizontal">
+        <div class="row align-items-center">
+            <div class="col-2">
+                <h3 style="margin-bottom: 0"><strong>Категории</strong></h3>
+            </div>
+            <div class="col-10">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="allCategoriesChecked">
+                    <label class="form-check-label" for="allCategoriesChecked">
+                        Выбрать все категории
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            @foreach (var category in Model.Categories.OrderBy(c => c.Name))
+            {
+                <div class="col-2">
+                    <div class="form-check">
+                        <input class="form-check-input category-checkbox" type="checkbox" id="@category.Id" name="categories" value="@category.Id">
+                        <label class="form-check-label" for="@category.Id">
+                            @category.Name
+                        </label>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="row mt-2">
+            <div class="col-12">
+                <a href="#" class="btn btn-primary" id="showProducts">Показать все товары выбранных категорий</a>
+            </div>
+        </div>
+        <hr />
+        <div class="row align-items-center" id="productListTitle">
+            
+        </div>
+        <div class="row mt-3" id="productList">
+
+        </div>
+        <div class="row mt-2" id="productShowArticleBtn">
+            
+        </div>
+        <hr />
+        <div class="row align-items-center" id="ArticleListTitle">
+            
+        </div>
+        <div class="row mt-3" id="articleList">
+
+        </div>
+    </div>
+    @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
+</form>

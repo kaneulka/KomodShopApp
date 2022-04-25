@@ -1,0 +1,65 @@
+﻿@model Komod.Web.Models.OrderItemModels.OrderInfo
+
+<div class="modal-wrapper">
+    <div class="modal-wrapper__header">
+        <p>Информация о заказе №@Model.Order.OrderNumber</p>
+        <a href="#close" title="Закрыть" class="close-modal"><span></span></a>
+    </div>
+    <div itemscope itemtype="http://schema.org/Service" class="modal-wrapper__body">
+        <div class="order-info">
+            <p class="order-info__text"><strong>ФИО заказчика: </strong>@Model.Order.ClientFIO</p>
+            <p class="order-info__text"><strong>Статус заказа: </strong>@Model.Order.OrderStatusName</p>
+            <p class="order-info__text"><strong>Форма оплаты: </strong>@Model.Order.PaymentMethodName</p>
+            <p class="order-info__text"><strong>Доставка: </strong>@Model.Order.DeliveryMethodName</p>
+            <p class="order-info__text"><strong>Цена за доставку: </strong>@Model.Order.DeliveryPrice</p>
+            <p class="order-info__text"><strong>Общая сумма заказа: </strong>@(Model.Order.TotalPrice + Model.Order.DeliveryPrice) руб.</p>
+
+            <table class="table table-bordered table-hover order-info__table">
+                <tr>
+                    <th>Артикул</th>
+                    <th>Название товара</th>
+                    <th>Кол-во</th>
+                    <th>Цена за шт.</th>
+                    <th>Сумма</th>
+                </tr>
+
+                @foreach (var oi in Model.OrderItems)
+                {
+                    <tr>
+                        <td>@oi.ArticleName</td>
+                        <td><a asp-action="Product" asp-controller="Home" asp-route-id="@oi.ProductId">@oi.ProductName</a></td>
+                        <td>@oi.Quantity</td>
+                        <td>@oi.UnitPrice руб.</td>
+                        <td>@oi.TotalPrice руб.</td>
+                    </tr>
+                }
+            </table>
+
+            <div class="order-info__table-mobile">
+                @foreach (var oi in Model.OrderItems)
+                {
+                    <div class="order-info__table-mobile-group">
+                        <div class="order-info__table-mobile-strong">Артикул</div>
+                        <div class="order-info__table-mobile-text">@oi.ArticleName</div>
+                    </div>
+                    <div class="order-info__table-mobile-group">
+                        <div class="order-info__table-mobile-strong">Название товара</div>
+                        <div class="order-info__table-mobile-text"><a asp-action="Product" asp-controller="Home" asp-route-id="@oi.ProductId">@oi.ProductName</a></div>
+                    </div>
+                    <div class="order-info__table-mobile-group">
+                        <div class="order-info__table-mobile-strong">Кол-во</div>
+                        <div class="order-info__table-mobile-text">@oi.Quantity</div>
+                    </div>
+                    <div class="order-info__table-mobile-group">
+                        <div class="order-info__table-mobile-strong">Цена за шт.</div>
+                        <div class="order-info__table-mobile-text">@oi.UnitPrice руб.</div>
+                    </div>
+                    <div class="order-info__table-mobile-group">
+                        <div class="order-info__table-mobile-strong">Сумма</div>
+                        <div class="order-info__table-mobile-text">@oi.TotalPrice руб.</div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

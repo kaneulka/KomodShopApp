@@ -1,0 +1,20 @@
+﻿@model BrandViewModel
+@using Komod.Web.Models.BrandModels
+@using Komod.Web.Models
+
+<form asp-action="EditBrand" role="form">
+    @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Редактировать производителя" })
+    <div class="modal-body form-horizontal">
+        <div class="row">
+            <div class="col-12">
+                <input asp-for="Id" />
+                <div class="form-group">
+                    <span asp-validation-for="BrandName"></span><br />
+                    <label asp-for="BrandName"></label>
+                    <input asp-for="BrandName" class="form-control" />
+                </div>
+            </div>
+        </div>
+    </div>
+    @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
+</form>

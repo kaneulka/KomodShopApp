@@ -1,0 +1,20 @@
+﻿@using Komod.Web.Models.CategoryModels;
+@model List<CategoryViewModel>
+
+@foreach (var category in Model)
+{
+<li class="catalog-submenu-mobile__item">
+    <div class="catalog-submenu-mobile__group">
+        @if (category.ChildCategories == true)
+        {
+        <a href="#" data-parentId="@category.Id" class="catalog-submenu-mobile__link">@category.Name <i class="fas fa-caret-down"></i></a>
+        }
+        else
+        {
+        <a asp-controller="Home" asp-action="Catalog" asp-route-categoryId="@category.Id" class="catalog-submenu-mobile__link">@category.Name</a>
+        }
+    </div>
+    <ul class="catalog-submenu-mobile">
+    </ul>
+</li>
+}

@@ -1,0 +1,13 @@
+﻿@model UserViewModel
+@using Komod.Web.Models.UserModels
+@using Komod.Web.Models
+
+<form asp-action="DeleteUser" role="form">
+    @Html.Partial("_ModalHeader", new ModalHeader { Heading = "Удаление пользователя" })
+
+    <div class="modal-body">
+        <input asp-for="Id" />
+        Вы уверены, что хотите удалить @Model.Email?
+    </div>
+    @Html.Partial("_ModalFooter", new ModalFooter { SubmitButtonText = "Удалить" })
+</form>

@@ -1,0 +1,60 @@
+﻿@model ArticleViewModel
+@using Komod.Web.Models.ProductModels
+@using Komod.Web.Models
+
+<form asp-action="AddArticle" role="form" asp-route-returnurl="@ViewBag.ReturnUrl" enctype="multipart/form-data">
+    @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Добавление артикула" })
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-12">
+                <input asp-for="ProductId" type="hidden" />
+                <input asp-for="ProductName" type="hidden" value="@Model.Product.Name" />
+                <div class="form-group">
+                    <span asp-validation-for="Name"></span><br />
+                    <label asp-for="Name"></label>
+                    <input asp-for="Name" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <span asp-validation-for="Price"></span><br />
+                    <label asp-for="Price"></label>
+                    <input type="number" asp-for="Price" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="Quantity"></label>
+                    <input type="number" asp-for="Quantity" class="form-control" />
+                </div>
+                <select class="form-control" asp-for="ColorId">
+                    <option style="background:#ffffff;" value="@Model.Colors.SingleOrDefault(c => c.Name == "Без цвета").Id">@Model.Colors.SingleOrDefault(c => c.Name == "Без цвета").Name</option>
+                    @foreach (var c in Model.Colors.Where(c => c.Name != "Без цвета"))
+                    {
+                        <option style="background:@c.ColorCode;" value="@c.Id">@c.Name</option>
+                    }
+                </select>
+                <div class="form-group">
+                    <label class="col-form-label">Выберите изображение для загрузки</label>
+                    <input class="ml-3" type="file" name="uploadedFile" />
+                </div>
+                <h3>Характеристики товара</h3>
+                <div class="form-group">
+                    <label>Название свойства</label>
+                    <select asp-for="Id" asp-items="@Model.Properties.OrderBy(p => p.Text)" class="form-control" id="property-list">
+                        <option value="-1">Выберите свойство...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Значение свойства</label>
+                    <select class="form-control" id="property-values-list">
+                        <option value="-1">Выберите значение...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <a href="#" class="btn btn-primary" id="add-property"><i class="c-icon cil-plus"></i></a>
+                </div>
+                <div class="propertiesList d-flex flex-wrap">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
+</form>

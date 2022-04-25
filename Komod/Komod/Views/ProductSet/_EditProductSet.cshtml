@@ -1,0 +1,49 @@
+﻿@model ProductSetViewModel
+@using Komod.Web.Models.ProductModels
+@using Komod.Web.Models
+
+<form asp-action="EditProductSet" role="form">
+    @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Изменение комплекта" })
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-12">
+                <input asp-for="Id" />
+                <div class="form-group">
+                    <span asp-validation-for="SetName"></span><br />
+                    <label asp-for="SetName"></label>
+                    <input asp-for="SetName" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <span asp-validation-for="DiscounPercent"></span><br />
+                    <label asp-for="DiscounPercent"></label>
+                    <input asp-for="DiscounPercent" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <span asp-validation-for="ActiveSet"></span><br />
+                    <label asp-for="ActiveSet"></label>
+                    <input asp-for="ActiveSet" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <ul>
+                        @foreach (var a in Model.ProductsInAdmin)
+                        {
+                            <li>
+                                @if (Model.ProductSetName.Contains(a.Name + "|"))
+                                {
+                                    <input type="checkbox" class="promocode-checkbox" name="productNames" value="@a.Name" checked>
+                                }
+                                else
+                                {
+                                    <input type="checkbox" class="promocode-checkbox" name="productNames" value="@a.Name">
+                                }
+                                <label class="custom-unchecked">@a.Name</label>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
+</form>
+

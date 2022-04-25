@@ -1,0 +1,34 @@
+﻿@model EventPromotionViewModel
+@using Komod.Web.Models.EventPromotionModels
+@using Komod.Web.Models
+
+<form asp-action="AddEventPromotion" role="form" method="post" enctype="multipart/form-data">
+    @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Добавление акции" })
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-12">
+                <div class="form-group">
+                    <span asp-validation-for="Name"></span><br />
+                    <label asp-for="Name"></label>
+                    <input asp-for="Name" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>Выберите изображение для загрузки</label>
+                    <input class="form-control" type="file" name="uploadedFile" />
+                </div>
+                <div class="form-group">
+                    <span asp-validation-for="StartEvent"></span><br />
+                    <label asp-for="StartEvent"></label>
+                    <input asp-for="StartEvent" class="form-control" value="@DateTime.Now.ToString("dd.MM.yyyy HH:mm")" />
+                </div>
+                <div class="form-group">
+                    <span asp-validation-for="EndEvent"></span><br />
+                    <label asp-for="EndEvent"></label>
+                    <input asp-for="EndEvent" class="form-control" value="@DateTime.Now.ToString("dd.MM.yyyy HH:mm")"/>
+                </div>
+            </div>
+        </div>
+    </div>
+    @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
+</form>
+

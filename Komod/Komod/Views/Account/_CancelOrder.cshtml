@@ -1,0 +1,16 @@
+﻿<div class="modal-wrapper">
+    <div class="modal-wrapper__header">
+        <p>Отмена заказа №@ViewBag.OrderNumber</p>
+        <a href="#close" title="Закрыть" class="close-modal"><span></span></a>
+    </div>
+    <div itemscope itemtype="http://schema.org/Service" class="modal-wrapper__body">
+        <form asp-action="CancelOrderPost" asp-controller="Account" asp-route-orderId="@ViewBag.OrderId" method="post" class="login-form" role="form">
+            <div class="login-form__group">
+                <p>Вы уверены, что хотите отменить заказ?</p>
+            </div>
+            <div class="login-form__group">
+                <button class="login-form__btn" type="submit">Подтвердить</button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,13 @@
+﻿@model PropertyViewModel
+@using Komod.Web.Models.PropertyModels
+@using Komod.Web.Models
+
+<form asp-action="DeleteProperty" role="form">
+    @Html.Partial("_ModalHeader", new ModalHeader { Heading = "Удаление характеристику" })
+
+    <div class="modal-body">
+        <input asp-for="Id" />
+        Вы уверены, что хотите удалить @Model.Name?
+    </div>
+    @Html.Partial("_ModalFooter", new ModalFooter { SubmitButtonText = "Удалить" })
+</form>

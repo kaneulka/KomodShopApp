@@ -1,0 +1,122 @@
+﻿@using Komod.Web.Models.AccountModels
+@model AccountViewModel
+@{
+    ViewData["Title"] = "Личный кабинет";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+
+<!-- USER-PROFILE -->
+<section class="main-about-us">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="section-title">Личный кабинет</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- USER-PROFILE-MOBILE -->
+    <div class="lk-mobile">
+        <a href="#" class="lk-menu__btn">Меню <i class="fas fa-caret-down"></i></a>
+        <ul class="lk-menu">
+            <li class="lk-menu__item"><a asp-controller="Account" asp-action="YourAccount" class="lk-menu__link lk-menu__link_active">Данные учетной записи</a></li>
+            <li class="lk-menu__item"><a asp-controller="Account" asp-action="YourOrders" class="lk-menu__link">Мои заказы</a></li>
+        </ul>
+
+        <form asp-controller="Account" asp-action="YourAccount" role="form" method="post" class="lk-form">
+            <div class="lk-form__group">
+                <label asp-for="UserFIO" class="lk-form__label">ФИО</label>
+                <input asp-for="UserFIO" type="text" class="lk-form__input" value="@Model.UserFIO" autocomplete="new-password">
+                <span asp-validation-for="UserFIO" class="lk-form__error"></span>
+            </div>
+            <div class="lk-form__group">
+                <label asp-for="Email" class="lk-form__label">Адрес электронной почты</label>
+                <input asp-for="Email" type="text" class="lk-form__input" value="@Model.Email" autocomplete="new-password">
+                <span asp-validation-for="Email" class="lk-form__error"></span>
+            </div>
+            <div class="lk-form__group">
+                <label asp-for="PhoneNumber" class="lk-form__label">Контактный телефон</label>
+                <input asp-for="PhoneNumber" type="text" class="lk-form__input" value="@Model.PhoneNumber" autocomplete="new-password">
+                <span asp-validation-for="PhoneNumber" class="lk-form__error"></span>
+            </div>
+            <div class="lk-form__group">
+                <label asp-for="OldPassword" class="lk-form__label">Текущий пароль</label>
+                <input asp-for="OldPassword" type="password" class="lk-form__input" autocomplete="new-password">
+                <span asp-validation-for="OldPassword" class="lk-form__error"></span>
+            </div>
+            <div class="lk-form__group">
+                <label asp-for="NewPassword" class="lk-form__label">Новый пароль</label>
+                <input asp-for="NewPassword" type="password" class="lk-form__input" autocomplete="new-password">
+                <span asp-validation-for="NewPassword" class="lk-form__error"></span>
+            </div>
+            <div class="lk-form__group">
+                <label asp-for="PasswordConfirm" class="lk-form__label">Подтвердите новый пароль</label>
+                <input asp-for="PasswordConfirm" type="password" class="lk-form__input" autocomplete="new-password">
+                <span asp-validation-for="PasswordConfirm" class="lk-form__error"></span>
+            </div>
+            <div class="lk-form__group">
+                <button class="lk-form__btn" type="submit">Сохранить</button>
+            </div>
+        </form>
+    </div>
+    <!-- USER-PROFILE-MOBILE END -->
+
+    <div class="container user-profile-global">
+        <div class="row">
+            <div class="col-4">
+                <ul class="section-wrapper user-menu">
+                    <li class="user-menu__item"><a asp-controller="Account" asp-action="YourAccount" class="user-menu__link">Данные учетной записи</a></li>
+                    <li class="user-menu__item"><a asp-controller="Account" asp-action="YourOrders" class="user-menu__link">Мои заказы</a></li>
+                </ul>
+            </div>
+            <div class="col-8">
+                <div class="section-wrapper user-profile">
+                    <h3 class="user-profile__title">Контактная информация</h3>
+                    <form asp-controller="Account" asp-action="YourAccount" role="form" class="user-form">
+                        <div class="user-form__col">
+                            <input asp-for="Id" />
+                            <div class="user-form__group">
+                                <label asp-for="UserFIO" class="user-form__label">ФИО</label>
+                                <input asp-for="UserFIO" type="text" class="user-form__input" value="@Model.UserFIO" autocomplete="new-password">
+                                <span asp-validation-for="UserFIO"></span>
+                            </div>
+                            <div class="user-form__group">
+                                <label asp-for="Email" class="user-form__label">Адрес электронной почты</label>
+                                <input asp-for="Email" type="text" class="user-form__input" value="@Model.Email" autocomplete="new-password">
+                                <span asp-validation-for="Email"></span>
+                            </div>
+                            <div class="user-form__group">
+                                <label asp-for="PhoneNumber" class="user-form__label">Контактный телефон</label>
+                                <input asp-for="PhoneNumber" type="text" class="user-form__input" value="@Model.PhoneNumber" autocomplete="new-password">
+                                <span asp-validation-for="PhoneNumber"></span>
+                            </div>
+                        </div>
+                        <div class="user-form__col">
+                            <div class="user-form__group">
+                                <label asp-for="OldPassword" class="user-form__label">Текущий пароль</label>
+                                <input asp-for="OldPassword" type="password" class="user-form__input" autocomplete="new-password">
+                                <span asp-validation-for="OldPassword"></span>
+                            </div>
+                            <div class="user-form__group">
+                                <label asp-for="NewPassword" for="" class="user-form__label">Новый пароль</label>
+                                <input asp-for="NewPassword" type="password" class="user-form__input" autocomplete="new-password">
+                                <span asp-validation-for="NewPassword"></span>
+                            </div>
+                            <div class="user-form__group">
+                                <label asp-for="PasswordConfirm" class="user-form__label">Подтвердите новый пароль</label>
+                                <input asp-for="PasswordConfirm" type="password" class="user-form__input" autocomplete="new-password">
+                                <span asp-validation-for="PasswordConfirm"></span>
+                            </div>
+                            <div class="user-form__group">
+                                <label for="" class="user-form__label user-form__label_hidden">Hidden</label>
+                                <button class="user-form__btn" type="submit">Сохранить</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- USER-PROFILE END -->

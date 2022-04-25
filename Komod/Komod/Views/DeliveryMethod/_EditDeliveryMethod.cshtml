@@ -1,0 +1,35 @@
+﻿@model DeliveryMethodViewModel
+@using Komod.Web.Models.Methods
+@using Komod.Web.Models
+
+<form asp-action="EditDeliveryMethod" role="form">
+    @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Редактировать метод доставки" })
+    <div class="modal-body form-horizontal">
+        <div class="row">
+            <div class="col-12">
+                <input asp-for="Id" />
+                <div class="form-group">
+                    <span asp-validation-for="Name"></span><br />
+                    <label asp-for="Name"></label>
+                    <input asp-for="Name" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <span asp-validation-for="District"></span><br />
+                    <label asp-for="District"></label>
+                    <input asp-for="District" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <span asp-validation-for="DeliveryPrice"></span><br />
+                    <label asp-for="DeliveryPrice"></label>
+                    <input asp-for="DeliveryPrice" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <span asp-validation-for="FreeDelivery"></span><br />
+                    <label asp-for="FreeDelivery"></label>
+                    <input asp-for="FreeDelivery" class="form-control" />
+                </div>
+            </div>
+        </div>
+    </div>
+    @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
+</form>

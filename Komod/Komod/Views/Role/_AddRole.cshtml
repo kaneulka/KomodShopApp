@@ -1,0 +1,18 @@
+﻿@model RoleViewModel
+@using Komod.Web.Models.UserModels
+@using Komod.Web.Models
+
+<form asp-action="AddRole" role="form">
+    @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Добавление роли" })
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-12">
+                <div class="form-group">
+                    <label asp-for="Name"></label>
+                    <input asp-for="Name" class="form-control" />
+                </div>
+            </div>
+        </div>
+    </div>
+    @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
+</form>

@@ -1,0 +1,192 @@
+﻿@model ProductSetsViewModel
+@using Komod.Web.Models.ProductModels
+@using Komod.Web.Code
+@using Komod.Web.Models
+
+@{
+    ViewData["Title"] = "Комплекты";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+}
+
+<div class="container-fluid">
+    <div class="fade-in">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-header"><h1>Комплекты</h1></div>
+                    <div class="card-body">
+                        <div class="row mb-2">
+                            <div class="col-lg-3">
+                                <a id="createProductSetModal" data-toggle="modal" href="#" data-target="#modal-action-ProductSet" class="btn btn-pill btn-block btn-primary">
+                                    Добавить кмоплект
+                                </a>
+                            </div>
+                            <div class="col-lg-9">
+                                <form asp-controller="ProductSet" asp-action="ProductSets" method="get" class="form-inline">
+                                    <div class="form-group mb-0 mr-3">
+                                        <select name="sortType" id="sortType" class="form-control" data-sortType="@ViewBag.SortType">
+                                            <option id="sortType-4" value="4">По названию</option>
+                                            <option id="sortType-5" value="5">По названию  (в обратном порядке)</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group mb-0">
+                                        <input type="text" name="searchString" class="form-control mr-3 inputSearch" placeholder="Поиск..." />
+                                        <button type="submit" class="btn btn-dark btn-pill btn-sm btnSearch">
+                                            <i class="c-icon cil-search"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <table class="table table-responsive-sm table-bordered table-striped table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Название</th>
+                                    <th>Список продуктов</th>
+                                    <th>Скидка %</th>
+                                    <th>Активный комплект</th>
+                                    <th>Действие</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.ProductSets)
+                                {
+                                    @if (item.ProductSetName != "No ProductSet")
+                                    {
+                                <tr>
+                                    <td>@Html.DisplayFor(modelItem => item.SetName)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.ProductSetName)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.DiscounPercent)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.ActiveSet)</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
+                                            <a data-toggle="modal" href="#" data-id="@item.Id" data-target="#modal-action-ProductSet" class="btn btn-dark editProductSetModal">
+                                                <i class="c-icon cil-pencil"></i>
+                                            </a>
+                                            <a data-toggle="modal" href="#" data-id="@item.Id" data-target="#modal-action-ProductSet" class="btn btn-danger deleteProductSetModal">
+                                                <i class="c-icon cil-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                        <nav>
+                            <ul class="pagination">
+                                @if (Model.PageViewModel.HasPreviousPage)
+                                {
+                                    <li class="page-item"><a class="page-link" asp-controller="ProductSet" asp-action="ProductSets" asp-route-page="@(Model.PageViewModel.PageNumber - 1)">Назад</a></li>
+                                }
+                                @if ((Model.PageViewModel.PageNumber - 2) > 0)
+                                {
+                                    string fp = "";
+                                    @if (Model.PageViewModel.PageNumber - 2 > 1)
+                                    {
+                                        fp = "...";
+                                    }
+                                    <li class="page-item"><a class="page-link" asp-controller="ProductSet" asp-action="ProductSets">1 @fp</a></li>
+                                }
+
+
+                                @if (Model.PageViewModel.HasPreviousPage)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link" asp-controller="ProductSet" asp-action="ProductSets" asp-route-page="@(Model.PageViewModel.PageNumber - 1)">
+                                            @(Model.PageViewModel.PageNumber - 1)
+                                        </a>
+                                    </li>
+                                }
+                                <li class="page-item active">
+                                    <a class="page-link" asp-controller="ProductSet" asp-action="ProductSets" asp-route-page="@Model.PageViewModel.PageNumber">
+                                        @Model.PageViewModel.PageNumber
+                                    </a>
+                                </li>
+                                @if (Model.PageViewModel.HasNextPage)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link" asp-controller="ProductSet" asp-action="ProductSets" asp-route-page="@(Model.PageViewModel.PageNumber + 1)">
+                                            @(Model.PageViewModel.PageNumber + 1)
+                                        </a>
+                                    </li>
+                                }
+
+                                @if ((Model.PageViewModel.PageNumber + 1) < Model.PageViewModel.TotalPages)
+                                {
+                                    string fp = "";
+                                    @if (Model.PageViewModel.PageNumber + 2 < Model.PageViewModel.TotalPages)
+                                    {
+                                        fp = "...";
+                                    }
+                                    <li class="page-item">
+                                        <a class="page-link" asp-controller="ProductSet" asp-action="ProductSets" asp-route-page="@Model.PageViewModel.TotalPages">
+                                            @fp @Model.PageViewModel.TotalPages
+                                        </a>
+                                    </li>
+                                }
+                                @if (Model.PageViewModel.HasNextPage)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link" asp-controller="ProductSet" asp-action="ProductSets" asp-route-page="@(Model.PageViewModel.PageNumber + 1)">
+                                            Вперед
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-ProductSet", AreaLabeledId = "modal-action-ProductSet-label", Size = ModalSize.Large })
+
+@section scripts
+    {
+    <script>
+        $('#createProductSetModal').click(function (e) {
+            e.preventDefault();
+            $('#modal-content').load('@Url.Action("AddProductSet", "ProductSet")');
+        });
+        $('.editProductSetModal').click(function (e) {
+            e.preventDefault();
+            var ProductSetId = $(this).attr("data-id");
+            name = encodeURIComponent(ProductSetId);
+            $('#modal-content').load('@Url.Action("EditProductSet", "ProductSet")?id=' + ProductSetId);
+        });
+        $('.deleteProductSetModal').click(function (e) {
+            e.preventDefault();
+            var ProductSetId = $(this).attr("data-id");
+            name = encodeURIComponent(ProductSetId);
+            $('#modal-content').load('@Url.Action("DeleteProductSet", "ProductSet")?id=' + ProductSetId);
+        });
+
+        var sortType = $('#sortType').attr("data-sortType");
+
+        switch (sortType) {
+            case "0":
+                $('#sortType-0').attr("selected", "selected");
+                break;
+            case "1":
+                $('#sortType-1').attr("selected", "selected");
+                break;
+            case "2":
+                $('#sortType-2').attr("selected", "selected");
+                break;
+            case "3":
+                $('#sortType-3').attr("selected", "selected");
+                break;
+            case "4":
+                $('#sortType-4').attr("selected", "selected");
+                break;
+            case "5":
+                $('#sortType-5').attr("selected", "selected");
+                break;
+        }
+    </script>
+}
+

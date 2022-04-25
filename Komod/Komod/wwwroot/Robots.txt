@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Allow: /Home
+Disallow: /
+Crawl-delay: 0.5
+Sitemap: https://komod-tlt.ru/Sitemap.txt

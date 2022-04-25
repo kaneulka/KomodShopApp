@@ -1,0 +1,40 @@
+﻿@model PromocodeViewModel
+@using Komod.Web.Models.PromocodeModels
+@using Komod.Web.Models
+
+<form asp-action="EditPromocode" role="form">
+    @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Редактировать промокода" })
+    <div class="modal-body form-horizontal">
+        <div class="row">
+            <div class="col-12">
+                <input asp-for="Id" />
+                <div class="form-group">
+                    <span asp-validation-for="PromocodeName"></span><br />
+                    <label asp-for="PromocodeName"></label>
+                    <input asp-for="PromocodeName" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <span asp-validation-for="EndOfPromocode"></span><br />
+                    <label asp-for="EndOfPromocode"></label>
+                    <input asp-for="EndOfPromocode" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <span asp-validation-for="DiscountPercent"></span><br />
+                    <label asp-for="DiscountPercent"></label>
+                    <input asp-for="DiscountPercent" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <span asp-validation-for="PersonalUserPromo"></span><br />
+                    <label asp-for="PersonalUserPromo"></label>
+                    <input asp-for="PersonalUserPromo" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <span asp-validation-for="Count"></span><br />
+                    <label asp-for="Count"></label>
+                    <input asp-for="Count" class="form-control" />
+                </div>
+            </div>
+        </div>
+    </div>
+    @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
+</form>

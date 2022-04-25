@@ -1,0 +1,777 @@
+﻿@using Komod.Web.Models.CategoryModels
+@model CategoriesViewModel
+
+@{
+    if (Model.CategoriesBred != null)
+    {
+        ViewData["Title"] = Model.CategoriesBred[0].Title;
+        ViewData["Description"] = Model.CategoriesBred[0].TitleDescrition;
+    }
+    else
+    {
+        ViewData["Title"] = "Результаты поиска";
+        ViewData["Description"] = "Результаты поиска";
+    }
+    ViewData["Keywords"] = "Набитый комод интернет магазин Тольятти каталог текстиль пряжа постельное белье";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+<!-- FILTER MOBILE -->
+<div class="filter-mobile">
+
+</div>
+<!-- FILTER MOBILE -->
+<!-- CATALOG -->
+<section class="catalog">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="catalog__breadcrumbs">
+                    @if (Model.CategoriesBred != null)
+                    {
+                        @for (var i = Model.CategoriesBred.Count - 1; i > 0; i--)
+                        {
+                            <a asp-controller="Home" asp-action="Catalog" asp-route-categoryId="@Model.CategoriesBred[i].Id">@Model.CategoriesBred[i].Name</a><span> ></span>
+                        }
+                        <a asp-controller="Home" asp-action="Catalog" asp-route-categoryId="@Model.CategoriesBred[0].Id">@Model.CategoriesBred[0].Name</a>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-3">
+                <div class="filter">
+
+                </div>
+            </div>
+            <div class="col-9">
+                <div class="products">
+                    <div class="products__loader"><i class="fas fa-spinner fa-spin"></i></div>
+                    <div class="products__group">
+                        <div class="sort">
+                            <div class="sort__title">Тип сортировки</div>
+                            <a href="#" class="sort__type sort__type_active" data-sortType="0">По цене (по возрастанию)</a>
+                            <a href="#" class="sort__type" data-sortType="1">По цене (убыванию)</a>
+                        </div>
+                    </div>
+                    <div class="row productList">
+
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <a href="#" class="moreProducts">Показать больше товаров</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    @section scripts
+        {
+        <script>
+
+            var currentCountItems = 0;
+            var allProducts = [];
+            var filteredProducts = [];
+            var isFiltered = false;
+            var countItemsOnPage = 18;
+            var minPriceAtStart = 0;
+            var maxPriceAtStart = 0;
+
+            function generateFilterMobile(list) {
+                var filterMobile = `<div class="filter-mobile__group">
+                                        <div class="filter-mobile__title">Цена</div>
+                                        <input type="number" class="filter-mobile__min-price price__input_min-mobile" value="` + list.MinPrice + `" /> - <input type="number" class="filter-mobile__max-price price__input_max-mobile" value="` + list.MaxPrice + `" />
+                                    </div>`;
+                filterMobile += `<div class="filter-mobile__group">
+                                         <div class="filter-mobile__title filter-mobile__title_open">Производитель <i class="fas fa-chevron-down"></i></div>
+                                         <div class="filter-mobile__propertyValues">`;
+                $.each(list.Brands, function (i, item) {
+                    filterMobile += `<input type="checkbox" class="filter-mobile__checkbox brandsList" id="` + item.BrandName + `-mobile" name="propertyValueId" value="` + item.Id + `" /><label for="` + item.BrandName + `-mobile" class="filter-mobile__label-checkbox">` + item.BrandName + `</label>`;
+                });
+                filterMobile += `    </div>
+                                 </div>`;
+
+                filterMobile += `<div class="filter-mobile__group">
+                                         <div class="filter-mobile__title filter-mobile__title_open">Цвет <i class="fas fa-chevron-down"></i></div>
+                                         <div class="filter-mobile__propertyValues">`;
+                $.each(list.Colors, function (i, item) {
+                    if (item.Name === "Многоцвет") {
+                        filterMobile += `<input type="checkbox" class="filter-mobile__checkbox colorsList" id="` + item.Id + `-` + item.Name + `-mobile" name="propertyValueId" value="` + item.Id + `" style="display: none;" />
+                                     <label for="` + item.Id + `-` + item.Name + `-mobile" class="labelColor" style=" background: linear-gradient(90deg, rgba(255,0,0,1) 0%, rgba(255,165,0,1) 17%, rgba(255,255,0,1) 33%, rgba(0,255,0,1) 49%, rgba(0,191,255,1) 65%, rgba(0,0,255,1) 83%, rgba(139,0,255,1) 100%);" title="` + item.Name + `" data-labelId="` + item.Id + `"></label>`;
+                    }
+                    else {
+                        filterMobile += `<input type="checkbox" class="filter-mobile__checkbox colorsList" id="` + item.Id + `-` + item.Name + `-mobile" name="propertyValueId" value="` + item.Id + `" style="display: none;" />
+                                     <label for="` + item.Id + `-` + item.Name + `-mobile" class="labelColor" style="background: ` + item.ColorCode + `;" title="` + item.Name + `" data-labelId="` + item.Id + `"></label>`;
+                    }
+                });
+                filterMobile += `    </div>
+                                 </div>`;
+
+                $.each(list.Properties, function (i, p) {
+                    filterMobile += `<div class="filter-mobile__group">
+                                         <div class="filter-mobile__title filter-mobile__title_open">` + p.Name + ` <i class="fas fa-chevron-down"></i></div>
+                                         <div class="filter-mobile__propertyValues">`;
+                    $.each(list.PropertyValues, function (i, pv) {
+                        if (pv.PropertyId == p.Id) {
+                            filterMobile += `<div class="checkbox-mobile">
+                                                 <input type="checkbox" class="filter-mobile__checkbox filterList" id="` + pv.Id + `-` + pv.Name + `-mobile" name="propertyValueId" value="` + pv.Id + `" />
+                                                 <label for="` + pv.Id + `-` + pv.Name + `-mobile" class="filter-mobile__label-checkbox">` + pv.Value + `</label>
+                                             </div>`;
+                        }
+                        return;
+                    });
+                    filterMobile += `   </div>
+                                     </div>`;
+                });
+
+                filterMobile += `<a href="#" class="filter-mobile__btn filter__btn">Показать</a>
+                                 <a href="#" class="filter-mobile__clear filter__clear">Сбросить фильтры</a>`;
+                $(".filter-mobile").append(filterMobile);
+            }
+
+            function generateFilter(list) {
+                minPriceAtStart = list.MinPrice;
+                maxPriceAtStart = list.MaxPrice;
+                var filter = `<div class="filter__group price">
+                                      <label for="" class="filter__label">Цена</label>
+                                      <div class="price__inputs">
+                                          <div class="price__group">
+                                              <label for="" class="price__title">От</label>
+                                              <input type="number" class="price__input price__input_min" value="` + list.MinPrice + `">
+                                          </div>
+                                          <div class="price__divider"><span></span></div>
+                                          <div class="price__group">
+                                              <label for="" class="price__title">До</label>
+                                              <input type="number" class="price__input price__input_max" value="` + list.MaxPrice + `">
+                                          </div>
+                                      </div>
+                                  </div>`;
+                filter += `<div class="filter__group">
+                                     <a href="#" class="filter__label filter__label_black filter_open">Производитель <i class="fas fa-chevron-down"></i></a>
+                                     <div class="filter__propertyValues">`;
+
+                $.each(list.Brands, function (i, item) {
+                    filter += `<div class="checkbox">
+                                             <input type="checkbox" class="checkbox_element brandsList" id="` + item.Id + `-` + item.BrandName + `" name="propertyValueId" value="` + item.Id + `" />
+                                             <label for="` + item.Id + `-` + item.BrandName + `">` + item.BrandName + `</label>
+                                         </div>`;
+                });
+
+                filter += `   </div>
+                           </div>`;
+                filter += `<div class="filter__group">
+                                     <a href="#" class="filter__label filter__label_black filter_open">Страна <i class="fas fa-chevron-down"></i></a>
+                                     <div class="filter__propertyValues">`;
+
+                $.each(list.Countries, function (i, item) {
+                    filter += `<div class="checkbox">
+                                             <input type="checkbox" class="checkbox_element countriesList" id="` + item.Id + `-` + item.CountryName + `" name="propertyValueId" value="` + item.Id + `" />
+                                             <label for="` + item.Id + `-` + item.CountryName + `">` + item.CountryName + `</label>
+                                         </div>`;
+                });
+
+                filter += `   </div>
+                           </div>`;
+                filter += `<div class="filter__group">
+                                     <a href="#" class="filter__label filter__label_black filter_open">Цвет <i class="fas fa-chevron-down"></i></a>
+                                     <div class="filter__propertyValues">
+                                        <div class="filter__checkbox-color">`;
+
+                $.each(list.Colors, function (i, item) {
+                    if (item.Name === "Многоцвет") {
+                        filter += `<div class="color-desktop">
+                                             <input type="checkbox" class="colorsList" id="` + item.Id + `-` + item.Name + `" name="propertyValueId" value="` + item.Id + `" style="display: none;" />
+                                             <label for="` + item.Id + `-` + item.Name + `" style="background: linear-gradient(90deg, rgba(255,0,0,1) 0%, rgba(255,165,0,1) 17%, rgba(255,255,0,1) 33%, rgba(0,255,0,1) 49%, rgba(0,191,255,1) 65%, rgba(0,0,255,1) 83%, rgba(139,0,255,1) 100%);" title="` + item.Name + `" class="labelColor" data-labelId="` + item.Id + `"></label>
+                                         </div>`;
+                    }
+                    else {
+                        filter += `<div class="color-desktop">
+                                             <input type="checkbox" class="colorsList" id="` + item.Id + `-` + item.Name + `" name="propertyValueId" value="` + item.Id + `" style="display: none;" />
+                                             <label for="` + item.Id + `-` + item.Name + `" style="background: ` + item.ColorCode + `;" title="` + item.Name + `" class="labelColor" data-labelId="` + item.Id + `"></label>
+                                         </div>`;
+                    }
+                });
+
+                filter += `         </div>
+                                </div>
+                           </div>`;
+                $.each(list.Properties, function (i, p) {
+                    filter += `<div class="filter__group">
+                                         <a href="#" class="filter__label filter__label_black filter_open">` + p.Name + ` <i class="fas fa-chevron-down"></i></a>
+                                         <div class="filter__propertyValues">`;
+                    $.each(list.PropertyValues, function (i, pv) {
+                        if (pv.PropertyId == p.Id) {
+                            filter += `<div class="checkbox">
+                                                         <input type="checkbox" class="checkbox_element filterList" id="` + pv.Id + `-` + pv.Name + `" name="propertyValueId" value="` + pv.Id + `" />
+                                                         <label for="` + pv.Id + `-` + pv.Name + `">` + pv.Value + `</label>
+                                                     </div>`;
+                        }
+                        return;
+                    });
+                    filter +=     `</div>
+                                     </div>`;
+                });
+
+                filter += `<a href="#" class="filter__btn">Показать</a>
+                                 <a href="#" class="filter__clear">Сбросить фильтры</a>`;
+
+                $(".filter").append(filter);
+            }
+
+            // генерация списка товаров
+            function generateCatalogItems(list) {
+                var productList = '';
+                $.each(list, function (i, item) {
+                    //var favourite = '';
+                    //if (item.inFavourites == false) {
+                    //    favourite = "<a href='#' id='addToFavourites' data-productId='" + item.Product.Id + "' class='product-card__favourites'><i class='icon-heart'></i></a>";
+                    //}
+                    //else {
+                    //    favourite = "<a href='#' id='removeFromFavourites' data-productId='" + item.Product.Id + "' class='product-card__favourites product-card__favourites_active'><i class='icon-heart'></i></a>";
+                    //}
+                    var card =
+                        "<div class='col-4' itemscope itemtype='http://schema.org/Product'>" +
+                        "<div class='product-card'>" +
+                        "<a href='/Home/Product/" + item.Product.Id + "'><h4 class='product-card__title' itemprop='name' title='" + item.Product.Name + "'>" + item.Product.Name + "</h4></a>" +
+                        "<div class='product-card__img'>" +
+                        "<a href='/Home/Product/" + item.Product.Id + "'><img itemprop='image' src='" + item.Product.MainImgPath + "' alt='Картинка карточки' style='opacity:0'></a>";
+                    if (item.Product.DiscountPercent != 0) {
+                        card += "<div class='product-card__discount'>Скидка!</div>";
+                    }
+                    card += "</div>" +
+                        "<div class='product-card__group'  itemscope itemtype='http://schema.org/Offer>'>";
+
+                    var discount = 1;
+                    var day = new Date();
+                    var dayOfWeek = day.getDay();
+                    switch (dayOfWeek)
+                    {
+                        case '0':
+                            if (item.Product.DayOfWeek == "Sunday") discount = item.Product.DiscountPercent/100;
+                            break;
+                        case '1':
+                            if (item.Product.DayOfWeek == "Monday") discount = item.Product.DiscountPercent / 100;
+                            break;
+                        case '2':
+                            if (item.Product.DayOfWeek == "Tuesday") discount = item.Product.DiscountPercent / 100;
+                            break;
+                        case '3':
+                            if (item.Product.DayOfWeek == "Wednesday") discount = item.Product.DiscountPercent / 100;
+                            break;
+                        case '4':
+                            if (item.Product.DayOfWeek == "Thursday") discount = item.Product.DiscountPercent / 100;
+                            break;
+                        case '5':
+                            if (item.Product.DayOfWeek == "Friday") discount = item.Product.DiscountPercent / 100;
+                            break;
+                        case '6':
+                            if (item.Product.DayOfWeek == "Saturday") discount = item.Product.DiscountPercent / 100;
+                            break;
+                    }
+
+                    if (item.Product.MinProductPrice == item.Product.MaxProductPrice)
+                        card += "<span class='product-card__price'  itemprop='price' content=" + (item.Product.MaxProductPrice * (1 - discount)) + ">" + (item.Product.MaxProductPrice * discount) + " <i itemprop='priceCurrency' content='RUB' class='fas fa-ruble-sign'></i></span>"
+                    else
+                        card += "<span class='product-card__price'  itemprop='price' content=" + (item.Product.MinProductPrice * (1 - discount)) + ">" + (item.Product.MinProductPrice * discount) + " - " + (item.Product.MaxProductPrice * discount) + " <i itemprop='priceCurrency' content='RUB'  class='fas fa-ruble-sign'></i></span>";
+                    card += "<div>" +
+                        //favourite +
+                        "</div>" +
+                        "</div>" +
+                        "</div>" +
+                        "</div>";
+                    productList += card;
+                });
+                $(".productList").append(productList);
+
+                changeImages();
+                setTimeout(function () {
+                    $('.products__loader').css('display', 'none');
+                }, 500)
+
+            }
+
+            function changeImages() {
+                var images = $('.product-card__img img');
+                images.on('load', function () {
+                    var height = $(this).height();
+                    var width = $(this).width();
+                    if ((height - width) > 0) {
+                        $(this).css({
+                            'width': 'auto',
+                            'height': '100%',
+                            'opacity': '1'
+                        })
+                    }
+                    else {
+                        $(this).css({
+                            'opacity': '1'
+                        })
+                    }
+                });
+            }
+
+            function getFilter() {
+                $.urlParam = function (name) {
+                    var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+                    if (results == null) {
+                        return null;
+                    }
+                    else {
+                        return decodeURI(results[1]) || 0;
+                    }
+                }
+
+                var searchString = $.urlParam('searchString');
+                var categoryId = $.urlParam('categoryId');
+
+                var url;
+                if (searchString != null) {
+                    url = "/Home/GetFilter?searchString=" + searchString + "&categoryId=" + categoryId;
+                }
+                else {
+                    url = "/Home/GetFilter/?categoryId=" + categoryId;
+                }
+
+                $.ajax({
+                    type: "GET",
+                    url: url,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        generateFilterMobile(data);
+                        generateFilter(data);
+                    },
+
+                    failure: function (data) {
+                        alert(data.responseText);
+                    },
+                    error: function (data) {
+                        alert(data.responseText);
+                    }
+
+                });
+            }
+
+            //запрос каталога
+            function getCatalog() {
+                // сохранение поиска и категории
+                $.urlParam = function (name) {
+                    var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+                    if (results == null) {
+                        return null;
+                    }
+                    else {
+                        return decodeURI(results[1]) || 0;
+                    }
+                }
+
+                var searchString = $.urlParam('searchString');
+                var categoryId = $.urlParam('categoryId');
+                var url;
+                if (searchString != null) {
+                    url = "/Home/GetCatalog?searchString=" + searchString + "&categoryId=" + categoryId;
+                }
+                else {
+                    url = "/Home/GetCatalog/?categoryId=" + categoryId;
+                }
+                $.ajax({
+                    type: "GET",
+                    url: url,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        allProducts = data;
+
+                        //отфильтрованные товары
+                        firstEighteenItems(allProducts);
+                    },
+
+                    failure: function (data) {
+                        alert(data.responseText);
+                    },
+                    error: function (data) {
+                        alert(data.responseText);
+                    }
+
+                });
+            }
+
+            //вывод первых товаров и отображение кнопки показать больше
+            function firstEighteenItems(itemsList) {
+                var countElements = 0;
+                currentCountItems = 0;
+                var tempEighteen = [];
+
+                if (itemsList.length <= countItemsOnPage) {
+                    countElements = itemsList.length;
+                    $('.moreProducts').hide();
+                }
+                else {
+                    countElements = countItemsOnPage;
+                    $('.moreProducts').show();
+                }
+
+                for (var i = 0; i < countElements; i++) {
+                    tempEighteen[i] = itemsList[i];
+                    currentCountItems++;
+                }
+
+                $(".productList").html('');
+
+                generateCatalogItems(tempEighteen);
+            }
+
+            //вывод следующих товаров
+            function nextEighteenItems(itemsList) {
+                var tempEighteen = [];
+                for (var i = 0; i < countItemsOnPage; i++) {
+                    if (currentCountItems + 1 == itemsList.length) {
+                        tempEighteen[i] = itemsList[currentCountItems];
+                        $('.moreProducts').hide();
+                        break;
+                    }
+                    else {
+                        tempEighteen[i] = itemsList[currentCountItems];
+                        currentCountItems++;
+                    }
+                }
+                generateCatalogItems(tempEighteen);
+            }
+
+            //фильтрация списка товаров
+            function filterProducts(itemsList/*, isMobile*/) {
+                $(".productList").html('');
+
+                var minPrice = $('.price__input_min').val();
+                var maxPrice = $('.price__input_max').val();
+                var filteredList = [];
+                var priceFilteredList = [];
+                var brandFilteredList = [];
+                var countryFilteredList = [];
+                var colorFilteredList = [];
+
+                var chkArray = [];
+                $(".filterList:checked").each(function () {
+                    chkArray.push(parseInt($(this).val(), 10));
+                });
+                var brandArray = [];
+                $(".brandsList:checked").each(function () {
+                    brandArray.push(parseInt($(this).val(), 10));
+                });
+                var contriesArray = [];
+                $(".countriesList:checked").each(function () {
+                    contriesArray.push(parseInt($(this).val(), 10));
+                });
+                var colorArray = [];
+                $(".colorsList:checked").each(function () {
+                    colorArray.push(parseInt($(this).val(), 10));
+                });
+
+                $.each(itemsList, function (index, value) {
+                    if ((minPrice >= itemsList[index].Product.MinProductPrice && minPrice <= itemsList[index].Product.MaxProductPrice && maxPrice >= itemsList[index].Product.MaxProductPrice) ||
+                        (minPrice <= itemsList[index].Product.MinProductPrice && maxPrice >= itemsList[index].Product.MaxProductPrice) ||
+                        (maxPrice >= itemsList[index].Product.MinProductPrice && maxPrice <= itemsList[index].Product.MaxProductPrice && minPrice <= itemsList[index].Product.MinProductPrice))
+                    {
+                        priceFilteredList.push(itemsList[index]);
+                    }
+                });
+
+                if (brandArray.length === 0) {
+                    brandFilteredList = priceFilteredList;
+                }
+                else {
+                    $.each(priceFilteredList, function (index, value) {
+                        var isContains = brandArray.includes(priceFilteredList[index].Product.BrandId);
+                        if (isContains) {
+                            brandFilteredList.push(priceFilteredList[index]);
+                        }
+                    });
+                }
+
+                if (contriesArray.length === 0) {
+                    countryFilteredList = brandFilteredList;
+                }
+                else {
+                    $.each(brandFilteredList, function (index, value) {
+                        var isContains = contriesArray.includes(brandFilteredList[index].Product.CountryId);
+                        if (isContains) {
+                            countryFilteredList.push(brandFilteredList[index]);
+                        }
+                    });
+                }
+
+                if (colorArray.length === 0) {
+                    colorFilteredList = countryFilteredList;
+                }
+                else {
+                    $.each(countryFilteredList, function (index, value1) {
+                        $.each(countryFilteredList[index].Product.Colors, function (indexColor, value2) {
+                            var isContains = colorArray.includes(countryFilteredList[index].Product.Colors[indexColor].Id);
+                            if (isContains) {
+                                colorFilteredList.push(countryFilteredList[index]);
+                                return false;
+                            }
+                        });
+                    });
+                }
+
+                function isContainsPVI(element, index, array) {
+                    return chkArray.includes(element.Id);
+                }
+
+                if (chkArray.length === 0) {
+                    filteredList = colorFilteredList;
+                }
+                else {
+                    $.each(colorFilteredList, function (index, value) {
+                        if (colorFilteredList[index].PropertyValues !== null) {
+                            var isContains = colorFilteredList[index].PropertyValues.some(isContainsPVI);
+                            if (isContains) {
+                                filteredList.push(colorFilteredList[index]);
+                            }
+                        }
+                        else
+                        {
+                            filteredList.push(colorFilteredList[index]);
+                        }
+                    });
+                }
+
+                firstEighteenItems(filteredList);
+                return filteredList;
+            }
+
+
+            $(document).ready(function () {
+
+                getFilter();
+                //получение всех товаров категории
+                getCatalog();
+
+                var slider = document.getElementById('price__slider');
+
+                //Нажатие на кнопку фильтрации
+                $(document).on('click', ".filter__btn", function (e) {
+                    e.preventDefault();
+                    $('.products__loader').css('display', 'flex');
+                    filteredProducts = filterProducts(allProducts);
+                    isFiltered = true;
+                });
+                $(document).on('click', ".filter-mobile__btn", function (e) {
+                    e.preventDefault();
+                    $('.products__loader').css('display', 'flex');
+                    filteredProducts = filterProducts(allProducts);
+                    isFiltered = true;
+                });
+
+                //Сброс фильтра, показать исходный каталог без него
+                $(document).on('click', ".filter__clear", function (e) {
+                    e.preventDefault();
+                    $('.products__loader').css('display', 'flex');
+                    currentCountItems = 0;
+                    $(".checkbox_element").prop("checked", false);
+                    $('.price__input_min').val(minPriceAtStart);
+                    $('.price__input_max').val(maxPriceAtStart);
+                    colorClear();
+                    isFiltered = false;
+                    firstEighteenItems(allProducts);
+                });
+                $(document).on('click', ".filter-mobile__clear", function (e) {
+                    e.preventDefault();
+                    $('.products__loader').css('display', 'flex');
+                    currentCountItems = 0;
+                    $('.price__input_min').val(minPriceAtStart);
+                    $('.price__input_max').val(maxPriceAtStart);
+                    $('.filter-mobile').removeClass("filter-mobile_active");
+                    $(".filter-mobile__propertyValues").removeClass("filter-mobile__propertyValues_active");
+                    colorClear();
+                    isFiltered = false;
+                    firstEighteenItems(allProducts);
+                });
+
+                //нажатие на кнопку Показать больше
+                $(document).on('click', '.moreProducts', function (e) {
+                    e.preventDefault();
+                    if (isFiltered) {
+                        nextEighteenItems(filteredProducts);
+                    }
+                    else {
+                        nextEighteenItems(allProducts);
+                    }
+                });
+
+                //выбор сортировки
+                $(document).on('click', ".sort__type", function (e) {
+
+                    var sortType = $(this).attr("data-sortType");
+                    $(".sort__type").removeClass("sort__type_active")
+                    $(this).addClass("sort__type_active");
+
+                    if (sortType === "0") {
+                        allProducts.sort(function (a, b) {
+                            if (a.Product.MinProductPrice > b.Product.MinProductPrice) {
+                                return 1;
+                            }
+                            if (a.Product.MinProductPrice < b.Product.MinProductPrice) {
+                                return -1;
+                            }
+                            // a должно быть равным b
+                            return 0;
+                        });
+                        filteredProducts.sort(function (a, b) {
+                            if (a.Product.MinProductPrice > b.Product.MinProductPrice) {
+                                return 1;
+                            }
+                            if (a.Product.MinProductPrice < b.Product.MinProductPrice) {
+                                return -1;
+                            }
+                            // a должно быть равным b
+                            return 0;
+                        });
+                    }
+                    else {
+                        allProducts.sort(function (a, b) {
+                            if (a.Product.MinProductPrice > b.Product.MinProductPrice) {
+                                return -1;
+                            }
+                            if (a.Product.MinProductPrice < b.Product.MinProductPrice) {
+                                return 1;
+                            }
+                            // a должно быть равным b
+                            return 0;
+                        });
+                        filteredProducts.sort(function (a, b) {
+                            if (a.Product.MinProductPrice > b.Product.MinProductPrice) {
+                                return -1;
+                            }
+                            if (a.Product.MinProductPrice < b.Product.MinProductPrice) {
+                                return 1;
+                            }
+                            // a должно быть равным b
+                            return 0;
+                        });
+                    }
+
+                    currentCountItems = 0;
+                    if (isFiltered) {
+                        firstEighteenItems(filteredProducts);
+                    }
+                    else {
+                        firstEighteenItems(allProducts);
+                    }
+                });
+
+                // добавление в избранное 1 товара
+                $(document).on('click', "#addToFavourites", function (e) {
+                    e.preventDefault();
+                    var product = $(this).attr("data-productId");
+                    productId = encodeURIComponent(product);
+                    $('.my-alert').load('@Url.Action("AddToFavourites", "Favourites")?id=' + productId);
+                    var newHtml = "<a href='#' id='removeFromFavourites' data-productId='" + productId + "' class='product-card__favourites product-card__favourites_active'><i class='icon-heart'></i></a>";
+                    $(this).parent().html(newHtml);
+
+                    function fadeOutAlert() {
+                        $('#myAlert').alert("close");
+                    }
+
+                    setTimeout(fadeOutAlert, 3000);
+                });
+
+                // удаление из избранного 1 товара
+                $(document).on('click', "#removeFromFavourites", function (e) {
+                    e.preventDefault();
+                    var product = $(this).attr("data-productId");
+                    productId = encodeURIComponent(product);
+                    $('.my-alert').load('@Url.Action("RemoveFromFavourites", "Favourites")?id=' + productId);
+                    var newHtml = "<a href='#' id='addToFavourites' data-productId='" + productId + "' class='product-card__favourites'><i class='icon-heart'></i></a>";
+                    $(this).parent().html(newHtml);
+
+                    function fadeOutAlert() {
+                        $('#myAlert').alert("close");
+                    }
+
+                    setTimeout(fadeOutAlert, 3000);
+                });
+
+
+                $('.catalog-bar-mobile__filter').show();
+
+                //открытие фильтра в мобильной версии
+                $(document).on('click', ".catalog-bar-mobile__filter", function (e) {
+                    e.preventDefault();
+                    $('.filter-mobile').toggleClass("filter-mobile_active");
+                });
+
+                //открытие пунктов фильтра в мобильной версии
+                $(document).on('click', ".filter-mobile__title_open", function (e) {
+                    e.preventDefault();
+                    var children = $(this).children("i");
+
+                    if (children.hasClass("fa-chevron-down")) {
+                        children.removeClass("fa-chevron-down").addClass("fa-chevron-up");
+                    }
+                    else {
+                        children.removeClass("fa-chevron-up").addClass("fa-chevron-down");
+                    }
+                    var display = $(this).next(".filter-mobile__propertyValues").css("display");
+                    if (display == "none") {
+                        $(this).next(".filter-mobile__propertyValues").css("display", "block");
+                    }
+                    else {
+                        $(this).next(".filter-mobile__propertyValues").css("display", "none");
+                    }
+                    $(this).next(".filter-mobile__propertyValues").toggleClass("filter-mobile__propertyValues_active");
+                });
+
+                var labelsColorCheckedIds = [];
+
+                //Изменение цвета при нажатии
+                $(document).on('click', ".labelColor", function (e) {
+                    var labelId = $(this).attr('data-labelId');
+                    if (labelsColorCheckedIds.includes(labelId)) {
+                        var labelIndex = labelsColorCheckedIds.indexOf(labelId);
+                        labelsColorCheckedIds.splice(labelIndex, 1);
+                    }
+                    else {
+                        labelsColorCheckedIds.push(labelId);
+                    }
+
+                    if (labelsColorCheckedIds.length != 0) {
+                        colorsCheck();
+                    }
+                    else {
+                        colorClear();
+                    }
+
+                });
+
+                function colorsCheck() {
+                    $(".labelColor").each(function (index, value) {
+                        var labelId = $(this).attr("data-labelId");
+                        if (labelsColorCheckedIds.includes(labelId)) {
+                            $(this).parent(".color-desktop").removeClass("filter__checkbox-color_inactive");
+                            $(this).removeClass("labelColor_inactive");
+                        }
+                        else {
+                            $(this).parent(".color-desktop").addClass("filter__checkbox-color_inactive");
+                            $(this).addClass("labelColor_inactive");
+                        }
+                            
+                    });
+                }
+
+                function colorClear() {
+                    $(".labelColor").parent(".color-desktop").removeClass("filter__checkbox-color_inactive");
+                    $(".labelColor").removeClass("labelColor_inactive");
+                }
+
+            });
+
+
+        </script>
+    }
+</section>
+<!-- CATALOG END -->

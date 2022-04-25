@@ -1,0 +1,13 @@
+﻿@model ProductSetViewModel
+@using Komod.Web.Models.ProductModels
+@using Komod.Web.Models
+
+<form asp-action="DeleteProductSet" role="form">
+    @Html.Partial("_ModalHeader", new ModalHeader { Heading = "Удаление комплекта" })
+
+    <div class="modal-body">
+        <input asp-for="Id" />
+        Вы уверены, что хотите удалить комплект @Model.SetName?
+    </div>
+    @Html.Partial("_ModalFooter", new ModalFooter { SubmitButtonText = "Удалить" })
+</form>

@@ -1,0 +1,521 @@
+﻿@using Komod.Web.Code
+@{
+    var cart = SessionHelper.GetObjectFromJson<List<Komod.Web.Models.CartModels.CartItemViewModel>>(Context.Session, "cart");
+    //var favourite = SessionHelper.GetObjectFromJson<List<eShop.Web.Models.Favourite.Item>>(Context.Session, "favourites");
+    int quantityCart = 0;
+    int quantityFavourite = 0;
+    if (cart != null)
+    {
+        foreach (var item in cart)
+        {
+            quantityCart += item.ItemQuantity;
+        }
+    }
+    //if (favourite != null)
+    //{
+    //    foreach (var item in favourite)
+    //    {
+    //        quantityFavourite += item.Quantity;
+    //    }
+    //}
+}
+<!DOCTYPE html>
+<html lang="ru">
+<head itemscope itemtype="http://schema.org/WPHeader">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Купить комплект постельного белья, пряжу и текстиль в Тольятти – Набитый комод </title>
+    <meta name="description" content="Купить постельное бельё, пряжу и текстиль в интернет магазине komod-tlt.ru ➨бесплатная доставка в Тольятти от 2000➨самовывоз ➨хорошее качество по доступной цене ➨акции! ➨Заходите! " />
+    <meta name="keywords" content="Набитый комод постельное белье текстиль пряжа интернет магазин Тольятти">
+    <meta name="google-site-verification" content="Yw_lm2PSfErawRfB1nCibyM-qCzr8sQzDPyKFDGufwg" />
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Pacifico&amp;subset=cyrillic" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="~/css/bootstrap.min.css">
+
+    <link rel="stylesheet" type="text/css" href="~/css/slick.css" />
+    <link rel="stylesheet" type="text/css" href="~/css/slick-theme.css" />
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="~/css/main.css">
+    <meta name="yandex-verification" content="810a5426775892cd" />
+
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript">
+        (function (m, e, t, r, i, k, a) {
+        m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments) };
+            m[i].l = 1 * new Date(); k = e.createElement(t), a = e.getElementsByTagName(t)[0], k.async = 1, k.src = r, a.parentNode.insertBefore(k, a)
+        })
+            (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+        ym(51830495, "init", {
+            id: 51830495,
+            clickmap: true,
+            trackLinks: true,
+            accurateTrackBounce: true
+        });
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/51830495" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <!-- /Yandex.Metrika counter -->
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <h1 style="display: none">Интернет-магазин постельного белья, пряжи и текстиля</h1>
+    <div class="my-alert">
+
+    </div>
+    <!-- MODAL -->
+    <div id="open-modal-window" class="modal-window">
+
+    </div>
+
+    <div id="open-confirm-email-modal" class="modal-window">
+        <div class="modal-wrapper">
+            <div class="modal-wrapper__header">
+                <p>Подтверждение электронной почты</p>
+                <a href="#close" title="Закрыть" class="close-modal"><span></span></a>
+            </div>
+            <div class="modal-wrapper__body">
+                <div class="forget-form">
+                    <div class="forget-form__group">
+                        <p class="forget-form__text">Ваша электронная почта подтверждена. Добро пожаловать в Набитый комод!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="open-not-confirm-email-modal" class="modal-window">
+        <div class="modal-wrapper">
+            <div class="modal-wrapper__header">
+                <p>Подтверждение электронной почты</p>
+                <a href="#close" title="Закрыть" class="close-modal"><span></span></a>
+            </div>
+            <div class="modal-wrapper__body">
+                <div class="forget-form">
+                    <div class="forget-form__group">
+                        <p class="forget-form__text">Ваша электронная почта уже зарегестрирована, но не подтверждена. Вам выслано повторное письмо для потверждения учетной записи</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="open-forget-modal" class="modal-window">
+        <div class="modal-wrapper">
+            <div class="modal-wrapper__header">
+                <p>Восстановление пароля</p>
+                <a href="#close" title="Закрыть" class="close-modal"><span></span></a>
+            </div>
+            <div class="modal-wrapper__body">
+                <form action="#open-forget-send-modal" class="forget-form">
+                    <div class="forget-form__group">
+                        <p class="forget-form__text">Пожалуйста, введите ваш адрес электронной почты. Вы получите ссылку для восстановления пароля.</p>
+                        <label for="" class="forget-form__label">Адрес электронной почты</label>
+                        <input type="text" class="forget-form__input">
+                    </div>
+                    <div class="forget-form__group">
+                        <button class="forget-form__btn" type="submit">Отправить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="open-forget-send-modal" class="modal-window">
+        <div class="modal-wrapper">
+            <div class="modal-wrapper__header">
+                <p>Восстановление пароля</p>
+                <a href="#close" title="Закрыть" class="close-modal"><span></span></a>
+            </div>
+            <div class="modal-wrapper__body">
+                <form action="#" class="forget-form">
+                    <div class="forget-form__group">
+                        <p class="forget-form__text">На вашу почту было отправлено письмо с ссылкой на восстановление пароля.</p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="open-confirm-send-modal" class="modal-window">
+        <div class="modal-wrapper">
+            <div class="modal-wrapper__header">
+                <p>Регистрация</p>
+                <a href="#close" title="Закрыть" class="close-modal"><span></span></a>
+            </div>
+            <div class="modal-wrapper__body">
+                <form action="#" class="forget-form">
+                    <div class="forget-form__group">
+                        <p class="forget-form__text">Спасибо за регистрацию!</p>
+                        <p class="forget-form__text">На вашу почту было отправлено письмо для подтверждения.</p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- MODAL END -->
+    <!-- HEADER -->
+    <!-- HEADER MOBLIE -->
+    <div itemscope itemtype="http://schema.org/Organization" class="header-mobile">
+        <div class="heading-mobile">
+            <div class="heading-mobile__item">
+                <a href="#" class="heading-mobile__link phone-list-mobile-btn"><i class="fas fa-phone"></i></a>
+                <div itemscope itemtype="http://schema.org/Organization" class="phone-list-mobile">
+                    <div itemprop="telephone" class="phone-list-mobile__text">8 (937) 202-09-93</div>
+                </div>
+            </div>
+            <div class="heading-mobile__item">
+                <a href="#" class="heading-mobile__link search-mobile-btn"><i class="fas fa-search"></i></a>
+                <form asp-controller="Home" asp-action="Search" method="post" class="search-mobile">
+                    <input name="searchString" type="text" class="search-mobile__input" placeholder="Поиск">
+                    <button type="submit" class="search-mobile__btn"><i class="fas fa-search"></i></button>
+                </form>
+            </div>
+            <div class="heading-mobile__item">
+                @if (User.Identity.IsAuthenticated)
+                {
+                @if (User.IsInRole("admin"))
+                {
+                <a href="#" class="heading-mobile__link user-mobile-btn authorized-mobile"><i class="icon-user"></i></a>
+                <ul class="user-menu-mobile">
+                    <li class="user-menu-mobile__item"><a asp-controller="Admin" asp-action="Dashboard" class="user-menu-mobile__link">Админка</a></li>
+                    <li class="user-menu-mobile__item"><a asp-controller="Account" asp-action="YourAccount" class="user-menu-mobile__link">Профиль</a></li>
+                    <li class="user-menu-mobile__item">
+                        <form method="post" asp-controller="Account" asp-action="LogOff">
+                            <input class="user-menu-mobile__link" type="submit" value="Выход" />
+                        </form>
+                    </li>
+                </ul>
+                }
+                else
+                {
+                <a href="#" class="heading-mobile__link user-mobile-btn authorized-mobile"><i class="icon-user"></i></a>
+                <ul class="user-menu-mobile">
+                    <li class="user-menu-mobile__item"><a asp-controller="Account" asp-action="YourAccount" class="user-menu-mobile__link">Профиль</a></li>
+                    <li class="user-menu-mobile__item">
+                        <form method="post" asp-controller="Account" asp-action="LogOff">
+                            <input class="user-menu-mobile__link" type="submit" value="Выход" />
+                        </form>
+                    </li>
+                </ul>
+                }
+
+                }
+                else
+                {
+                <a href="#" class="heading-mobile__link user-mobile-btn"><i class="icon-user"></i></a>
+                <ul class="user-menu-mobile">
+                    <li class="user-menu-mobile__item"><a href="#open-modal-window" class="user-menu-mobile__link loginLink">Вход</a></li>
+                    <li class="user-menu-mobile__item"><a href="#open-modal-window" class="user-menu-mobile__link registerLink">Регистрация</a></li>
+                </ul>
+                }
+            </div>
+            @*<div class="heading-mobile__item">
+                <a asp-controller="Favourites" asp-action="Index" class="heading-mobile__link">
+                    <i class="icon-heart">
+                        if (quantityFavourite > 0)
+                        {
+                            <span>@quantityFavourite</span>
+                        }
+                    </i>
+                </a>
+            </div>*@
+            <div class="heading-mobile__item">
+                <a asp-controller="Cart" asp-action="Cart" class="heading-mobile__link">
+                    <i class="icon-shopping-bag" id="cartQuantityMobile">
+                        @if (quantityCart > 0)
+                        {
+                            <span data-quantityCart="@quantityCart">@quantityCart</span>
+                        }
+                    </i>
+                </a>
+            </div>
+        </div>
+        <div class="navbar-mobile navbar-mobile_main">
+            <div class="navbar-mobile__group">
+                <div itemprop="name" class="logo">
+                    <a itemprop="url" asp-controller="Home" asp-action="Index"><img src="~/images/logoWhite.png" alt="logo" class="logo__img"></a>
+                </div>
+                <a href="#" class="burger-btn burger-btn_main"><span></span></a>
+            </div>
+            <ul itemscope itemtype="http://www.schema.org/SiteNavigationElement" class="mobile-menu">
+                <li itemprop="name" class="mobile-menu__item"><a itemprop="url" asp-controller="Home" asp-action="Index" class="mobile-menu__link">Главная</a></li>
+                <li itemprop="name" class="mobile-menu__item"><a itemprop="url" asp-controller="Home" asp-action="Delivery" class="mobile-menu__link">Доставка</a></li>
+                @*<li itemprop="name" class="mobile-menu__item"><a itemprop="url" asp-controller="Home" asp-action="Discounts" class="mobile-menu__link">Скидки и бонусы</a></li>*@
+                <li itemprop="name" class="mobile-menu__item"><a itemprop="url" asp-controller="Home" asp-action="AboutUs" class="mobile-menu__link">О нас</a></li>
+                <li itemprop="name" class="mobile-menu__item"><a itemprop="url" asp-controller="Home" asp-action="EventPromotions" class="mobile-menu__link">Акции</a></li>
+                <li itemprop="name" class="mobile-menu__item"><a itemprop="url" asp-controller="Home" asp-action="Contacts" class="mobile-menu__link">Контакты</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="catalog-bar-mobile catalog-bar-mobile_color">
+        <div class="catalog-bar-mobile__group">
+            <a href="#" class="catalog-bar-mobile__title">Каталог <i class="fas fa-caret-down"></i></a>
+        </div>
+
+        <ul class="catalog-menu-mobile"></ul>
+    </div>
+
+    <!-- HEADER MOBLIE END -->
+    <!-- HEADER -->
+    <header itemscope itemtype="http://schema.org/Organization" class="heading">
+        <div class="wrapper-container-main">
+
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-2">
+                        <div class="logo">
+                            <a asp-controller="Home" asp-action="Index"><img src="~/images/logoWhite.png" alt="logo" class="logo__img"></a>
+                        </div>
+                    </div>
+                    <div class="col-10">
+                        <div class="row">
+                            <div class="col-5">
+                                <form asp-controller="Home" asp-action="Search" method="post" class="search">
+                                    <input name="searchString" type="text" class="search__input" placeholder="Поиск">
+                                    <button class="search__btn"><i class="fas fa-search"></i></button>
+                                </form>
+                            </div>
+                            <div class="col-4">
+                                <div class="user-icons">
+                                    <div class="user-profile-menu">
+                                        @if (User.Identity.IsAuthenticated)
+                                        {
+                                        @if (User.IsInRole("admin"))
+                                        {
+                                        <a href="#" id="open-login" class="authorized">
+                                            <p>@User.Identity.Name</p><i class="icon-user"></i>
+                                        </a>
+                                        <ul class="login-menu">
+                                            <li class="login-menu__item"><a asp-controller="Admin" asp-action="Dashboard" class="login-menu__link">Админка</a></li>
+                                            <li class="login-menu__item"><a asp-controller="Account" asp-action="YourAccount" class="login-menu__link">Профиль</a></li>
+                                            <li class="login-menu__item">
+                                                <form method="post" asp-controller="Account" asp-action="LogOff">
+                                                    <input class="login-menu__link login-menu__link_logOff" type="submit" value="Выход" />
+                                                </form>
+                                            </li>
+                                        </ul>
+                                        }
+                                        else
+                                        {
+                                        <a href="#" id="open-login" class="authorized">
+                                            <p>@User.Identity.Name</p><i class="icon-user"></i>
+                                        </a>
+                                        <ul class="login-menu">
+                                            <li class="login-menu__item"><a asp-controller="Account" asp-action="YourAccount" class="login-menu__link">Профиль</a></li>
+                                            <li class="login-menu__item">
+                                                <form method="post" asp-controller="Account" asp-action="LogOff">
+                                                    <input class="login-menu__link login-menu__link_logOff" type="submit" value="Выход" />
+                                                </form>
+                                            </li>
+                                        </ul>
+                                        }
+
+                                        }
+                                        else
+                                        {
+                                        <a href="#" id="open-login" class="authorized">
+                                            <i class="icon-user"></i>
+                                        </a>
+                                        <ul class="login-menu">
+                                            <li class="login-menu__item"><a href="#open-modal-window" class="login-menu__link loginLink">Вход</a></li>
+                                            <li class="login-menu__item"><a href="#open-modal-window" class="login-menu__link registerLink">Регистрация</a></li>
+                                        </ul>
+                                        }
+
+                                    </div>
+                                    @*<a href="#"><i class="icon-heart"></i></a>*@
+                                    <a asp-controller="Cart" asp-action="Cart">
+                                        <i class="icon-shopping-bag" id="cartQuantity">
+                                            @if (quantityCart > 0)
+                                            {
+                                                <span data-quantityCart="@quantityCart">@quantityCart</span>
+                                            }
+                                        </i>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div itemscope itemtype="http://schema.org/Organization" class="col-3">
+                                <a href="#" itemprop="telephone" class="phone">8 (937) 202-09-93</a>
+                            </div>
+                        </div>
+                        <div class="row row_mt">
+                            <div class="col-9">
+                                <nav itemscope itemtype="http://www.schema.org/SiteNavigationElement" class="navigation">
+                                    <ul class="nav-menu nav-menu_main">
+                                        <li itemprop="name" class="nav-menu__item"><a itemprop="url" asp-controller="Home" asp-action="Index" class="nav-menu__link">Главная</a></li>
+                                        <li itemprop="name" class="nav-menu__item dropdown-catalog">
+                                            <a href="#" itemprop="url" class="nav-menu__link dropbtn-catalog" style="color: orange; font-weight:bold">Каталог</a>
+                                            <ul class="catalog-menu"></ul>
+                                        </li>
+                                        <li itemprop="name" class="nav-menu__item"><a itemprop="url" asp-controller="Home" asp-action="Delivery" class="nav-menu__link">Доставка</a></li>
+                                        @*<li itemprop="name" class="nav-menu__item"><a itemprop="url" asp-controller="Home" asp-action="Discounts" class="nav-menu__link">Скидки и бонусы</a></li>*@
+                                        <li itemprop="name" class="nav-menu__item"><a itemprop="url" asp-controller="Home" asp-action="AboutUs" class="nav-menu__link">О нас</a></li>
+                                        <li itemprop="name" class="nav-menu__item"><a itemprop="url" asp-controller="Home" asp-action="EventPromotions" class="nav-menu__link">Акции</a></li>
+                                        <li itemprop="name" class="nav-menu__item"><a itemprop="url" asp-controller="Home" asp-action="Contacts" class="nav-menu__link">Контакты</a></li>
+                                    </ul>
+                                </nav>
+                            </div>
+                            <div class="col-3">
+                                <div itemscope itemtype="http://www.schema.org/SiteNavigationElement" class="social">
+                                    <a itemprop="url" href="https://www.instagram.com/komod.tlt/" target="_blank"><i class="fab fa-instagram"></i></a>
+                                    <a itemprop="url" href="https://vk.com/komod_tlt" target="_blank"><i class="fab fa-vk"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- HEADER END -->
+    <!-- OFFER -->
+    @*<div class="offer-mobile slick-offer-mobile">
+        <a asp-controller="Home" asp-action="Catalog" asp-route-categoryId="30" class="offer-mobile__group">
+            <span class="offer-mobile__title">Пряжа</span>
+            <img class="offer-mobile__img" src="~/images/offer-1-min.jpg" alt="Offer" />
+        </a>
+        <a asp-controller="Home" asp-action="Catalog" asp-route-categoryId="48" class="offer-mobile__group">
+            <span class="offer-mobile__title">Товары для рукоделия</span>
+            <img class="offer-mobile__img" src="~/images/offer-2-min.jpg" alt="Offer" />
+        </a>
+        <a asp-controller="Home" asp-action="Catalog" asp-route-categoryId="10" class="offer-mobile__group">
+            <span class="offer-mobile__title">Мягкий инвентарь</span>
+            <img class="offer-mobile__img" src="~/images/offer-3-min.jpg" alt="Offer" />
+        </a>
+        <a asp-controller="Home" asp-action="Catalog" asp-route-categoryId="5" class="offer-mobile__group">
+            <span class="offer-mobile__title">Постельное белье</span>
+            <img class="offer-mobile__img" src="~/images/offer-4-min.jpg" alt="Offer" />
+        </a>
+    </div>
+    
+    
+    <section class="offer">
+        <div class="offer__group">
+            <a asp-controller="Home" asp-action="Catalog" asp-route-categoryId="30" class="offer__block offer__block_1">
+                <img class="offer__img" src="~/images/offer-1-min.jpg" alt="Offer">
+                <span class="offer__title offer__title_1">Пряжа</span>
+            </a>
+            <a asp-controller="Home" asp-action="Catalog" asp-route-categoryId="48" class="offer__block offer__block_2">
+                <img class="offer__img" src="~/images/offer-2-min.jpg" alt="Offer">
+                <span class="offer__title offer__title_2">Товары для рукоделия</span>
+            </a>
+        </div>
+        <div class="offer__group">
+            <a asp-controller="Home" asp-action="Catalog" asp-route-categoryId="10" class="offer__block offer__block_3">
+                <img class="offer__img" src="~/images/offer-3-min.jpg" alt="Offer">
+                <span class="offer__title offer__title_3">Мягкий инвентарь</span>
+            </a>
+            <a asp-controller="Home" asp-action="Catalog" asp-route-categoryId="5" class="offer__block offer__block_4">
+                <img class="offer__img" src="~/images/offer-4-min.jpg" alt="Offer">
+                <span class="offer__title offer__title_4">Постельное белье</span>
+            </a>
+        </div>
+    </section>*@
+
+
+
+    <!-- OFFER END -->
+
+    @RenderBody()
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div itemscope itemtype="http://schema.org/Organization" class="container">
+            <div class="row">
+                <div class="col-2 logo-mobile">
+                    <div itemprop="logo" class="">
+                        <a asp-controller="Home" asp-action="Index"><img src="~/images/logoWhite.png" alt="logo" class="logo__img"></a>
+                    </div>
+                </div>
+                <div class="col-6 offset-1 footer-menu-mobile">
+                    <ul class="footer-menu d-flex justify-content-between flex-wrap" itemscope itemtype="http://www.schema.org/SiteNavigationElement">
+                        <li itemprop="name" class="footer-menu__item"><a itemprop="url" asp-controller="Home" asp-action="Index" class="footer-menu__link">Главная</a></li>
+                        <li itemprop="name" class="footer-menu__item"><a itemprop="url" asp-controller="Home" asp-action="Delivery" class="footer-menu__link">Доставка</a></li>
+                        @*<li itemprop="name" class="footer-menu__item"><a itemprop="url" asp-controller="Home" asp-action="Discounts" class="footer-menu__link">Скидки и бонусы</a></li>*@
+                        <li itemprop="name" class="footer-menu__item"><a itemprop="url" asp-controller="Home" asp-action="AboutUs" class="footer-menu__link">О&nbsp;нас</a></li>
+                        <li itemprop="name" class="footer-menu__item"><a itemprop="url" asp-controller="Home" asp-action="EventPromotions" class="footer-menu__link">Акции</a></li>
+                        <li itemprop="name" class="footer-menu__item"><a itemprop="url" asp-controller="Home" asp-action="Contacts" class="footer-menu__link">Контакты</a></li>
+                    </ul>
+                </div>
+                <div class="col-2 offset-1 footer-contacts-mobile">
+                    <div class="footer-contacts">
+                        <div class="footer-contacts__title">Социальные сети</div>
+                        <div class="footer-contacts__social">
+                            <a itemprop="url" href="https://www.instagram.com/komod.tlt/" target="_blank"><i class="fab fa-instagram"></i></a>
+                            <a itemprop="url" href="https://vk.com/komod_tlt" target="_blank"><i class="fab fa-vk"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="copyright">© 2018-@DateTime.Now.Year г. Набитый комод. Сайт подготовлен и разработан <a href="#">DEVORUM.</a></div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- FOOTER END -->
+    <!-- jQuery -->
+    <script src="~/js/jquery-3.3.1.min.js"></script>
+    <script src="~/js/nouislider.min.js"></script>
+    <script src="~/js/url.min.js"></script>
+
+    <script src="~/js/popper.min.js"></script>
+    <script src="~/js/bootstrap.min.js"></script>
+
+
+    <script src="~/js/jquery.validate.min.js"></script>
+    <script src="~/js/jquery.validate.unobtrusive.min.js"></script>
+
+    <script type="text/javascript" src="~/js/slick.min.js"></script>
+    <!-- Main JS -->
+    <script src="~/js/main.js" type="text/javascript"></script>
+    <script>
+        $(document).on('click', '.loginLink', function () {
+            $('#open-modal-window').load('@Url.Action("Login", "Account")');
+            setTimeout(function () {
+                history.pushState(null, null, '/');
+            }, 1);
+        });
+        $(document).on('click', '.registerLink', function () {
+            $('#open-modal-window').load('@Url.Action("Register", "Account")');
+            setTimeout(function () {
+                history.pushState(null, null, '/');
+            }, 1);
+        });
+
+        $(document).on('submit', '#login-form', function (e) {
+
+            e.preventDefault();
+
+            var url = $(this).attr("action");
+            var formData = $(this).serialize();
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: formData,
+                dataType: "json",
+                success: function (response) {
+                    var error = "Неправильный логин или пароль, либо пользователь не существует";
+                    $('#login-form__error').html(error);
+                },
+                error: function (response) {
+                    location.href = '@Url.Action("Index", "Home")';
+                }
+            });
+        });
+        $(document).on('click', '.addToCart', function () {
+            var id = $(this).attr("data-id");
+            $('#open-modal-window').load('@Url.Action("Buy", "Cart")?Id=' + id);
+        });
+    </script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

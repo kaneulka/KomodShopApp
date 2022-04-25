@@ -1,0 +1,13 @@
+@model CountryViewModel
+@using Komod.Web.Models.CountryModels
+@using Komod.Web.Models
+
+<form asp-action="DeleteCountry" role="form">
+    @Html.Partial("_ModalHeader", new ModalHeader { Heading = "Удаление производителя" })
+
+    <div class="modal-body">
+        <input asp-for="Id" />
+        Вы уверены, что хотите удалить @Model.CountryName?
+    </div>
+    @Html.Partial("_ModalFooter", new ModalFooter { SubmitButtonText = "Удалить" })
+</form>

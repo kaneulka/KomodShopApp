@@ -1,0 +1,46 @@
+﻿@model Komod.Web.Models.AccountModels.RegisterViewModel
+
+
+<div class="modal-wrapper">
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.min.js"
+            asp-fallback-src="~/lib/jquery-validation/dist/jquery.validate.min.js"
+            asp-fallback-test="window.jQuery && window.jQuery.validator">
+    </script>
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.6/jquery.validate.unobtrusive.min.js"
+            asp-fallback-src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"
+            asp-fallback-test="window.jQuery && window.jQuery.validator && window.jQuery.validator.unobtrusive">
+    </script>
+    <div class="modal-wrapper__header">
+        <p>Регистрация</p>
+        <a href="#close" title="Закрыть" class="close-modal"><span></span></a>
+    </div>
+    <div itemscope itemtype="http://schema.org/Service" class="modal-wrapper__body">
+        <form method="post" asp-controller="Account" asp-action="Register" class="registration-form">
+            <div asp-validation-summary="ModelOnly"></div>
+            <div class="registration-form__group">
+                <label asp-for="UserName" class="registration-form__label"></label>
+                <input asp-for="UserName" type="text" class="registration-form__input" autocomplete="new-password">
+                <span asp-validation-for="UserName"></span>
+            </div>
+            <div class="registration-form__group">
+                <label asp-for="Email" class="registration-form__label">Адрес электронной почты</label>
+                <input asp-for="Email" type="text" class="registration-form__input" autocomplete="new-password">
+                <span asp-validation-for="Email"></span>
+            </div>
+            <div class="registration-form__group">
+                <label asp-for="Password" class="registration-form__label">Пароль</label>
+                <input asp-for="Password" type="password" class="registration-form__input" autocomplete="new-password">
+                <span asp-validation-for="Password"></span>
+            </div>
+            <div class="registration-form__group">
+                <label asp-for="PasswordConfirm" class="registration-form__label">Подтвердите пароль</label>
+                <input asp-for="PasswordConfirm" type="password" class="registration-form__input" autocomplete="new-password">
+                <span asp-validation-for="PasswordConfirm"></span>
+            </div>
+            <div class="registration-form__group">
+                <label for="" class="registration-form__label registration-form__label_hidden">Hidden</label>
+                <button class="registration-form__btn" type="submit">Зарегистрироваться</button>
+            </div>
+        </form>
+    </div>
+</div>

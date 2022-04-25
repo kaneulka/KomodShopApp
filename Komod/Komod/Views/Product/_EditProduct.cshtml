@@ -1,0 +1,92 @@
+﻿@model ProductViewModel
+@using Komod.Web.Models.ProductModels
+@using Komod.Web.Models
+
+<form asp-action="EditProduct" role="form" asp-route-returnurl="@ViewBag.ReturnUrl">
+    @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Редактировать продукт" })
+    <div class="modal-body form-horizontal">
+        <div class="row">
+            <div class="col-12">
+                <input asp-for="Id" />
+                <div class="form-group">
+                    <span asp-validation-for="Name"></span><br />
+                    <label asp-for="Name"></label>
+                    <input asp-for="Name" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <span asp-validation-for="Description"></span><br />
+                    <label asp-for="Description"></label>
+                    <textarea asp-for="Description" id="editor" class="form-control descriptionHtml"></textarea>
+                </div>
+                <div class="form-group">
+                    <span asp-validation-for="Category"></span><br />
+                    <label asp-for="Category"></label>
+                    <select id="categoryList" onchange="getval(this);" asp-for="CategoryId" asp-items="@Model.Categories" class="form-control">
+                        <option>Выберите категорию...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <span asp-validation-for="Brand"></span><br />
+                    <label asp-for="Brand"></label>
+                    <select asp-for="BrandId" asp-items="@Model.Brands" class="form-control">
+                        <option value="0">Выберите производителя...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <span asp-validation-for="CountryId"></span><br />
+                    <label asp-for="Country"></label>
+                    <select asp-for="CountryId" asp-items="@Model.Countries" class="form-control">
+                        <option value="0">Выберите страну...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <span asp-validation-for="Title"></span><br />
+                    <label asp-for="Title"></label>
+                    <input asp-for="Title" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <span asp-validation-for="TitleDescription"></span><br />
+                    <label asp-for="TitleDescription"></label>
+                    <input asp-for="TitleDescription" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <span asp-validation-for="DiscountPercent"></span><br />
+                    <label asp-for="DiscountPercent"></label>
+                    <input asp-for="DiscountPercent" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <span asp-validation-for="DayOfWeek"></span><br />
+                    <label asp-for="DayOfWeek"></label>
+                    <select asp-for="DayOfWeek" class="form-control">
+                        <option value="">Выберите день недели...</option>
+                        <option value="Monday">Понедельник</option>
+                        <option value="Tuesday">Вторник</option>
+                        <option value="Wednesday">Среда</option>
+                        <option value="Thursday">Четверг</option>
+                        <option value="Friday">Пятница</option>
+                        <option value="Saturday">Суббота</option>
+                        <option value="Sunday">Воскресенье</option>
+                    </select>
+                </div>
+                @*<h3>Характеристики товара</h3>
+        <div class="propertiesList">
+            @foreach (var property in Model.Properties)
+            {
+                <div class="form-group">
+                    <input type="hidden" name="properties" value="@property.Name" />
+                    <div style="display: block;"><strong>@property.Name</strong></div>
+                    @foreach (var propertyValue in property.PropertyValues)
+                    {
+                        <div class="form-group">
+                            <input id="@propertyValue.Name" type="checkbox" name="propertyValues" value="@propertyValue.Name" @(Model.PropertyValuesChecked.Contains(propertyValue) ? "checked=\"checked\"" : "") />
+                            <label for="@propertyValue.Name">@propertyValue.Name</label>
+                        </div>
+                    }
+                </div>
+            }
+        </div>*@
+            </div>
+        </div>
+    </div>
+    @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
+</form>

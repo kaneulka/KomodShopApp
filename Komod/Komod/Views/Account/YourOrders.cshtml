@@ -1,0 +1,149 @@
+﻿@using Komod.Web.Models.OrderItemModels
+@model List<OrderViewModel>
+@{
+    ViewData["Title"] = "Личный кабинет";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+
+<div id="open-modal-order" class="modal-window">
+
+</div>
+
+<!-- USER-PROFILE -->
+<section class="main-about-us">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="section-title">Личный кабинет</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- USER-PROFILE-MOBILE -->
+    <div class="lk-mobile">
+        <a href="#" class="lk-menu__btn">Меню <i class="fas fa-caret-down"></i></a>
+        <ul class="lk-menu">
+            <li class="lk-menu__item"><a asp-controller="Account" asp-action="YourAccount" class="lk-menu__link">Данные учетной записи</a></li>
+            <li class="lk-menu__item"><a asp-controller="Account" asp-action="YourOrders" class="lk-menu__link lk-menu__link_active">Мои заказы</a></li>
+        </ul>
+
+        @if (Model.Count == 0)
+        {
+            <p class="lk-no-orders">У вас нет заказов</p>
+        }
+        else
+        {
+            @foreach (var order in Model.OrderByDescending(m => m.AddedDate))
+            {
+                <div class="lk-orders">
+                    <div class="lk-orders__group">
+                        <div class="lk-orders__title">Номер заказа</div>
+                        <div class="lk-orders__value">@order.OrderNumber</div>
+                    </div>
+                    <div class="lk-orders__group">
+                        <div class="lk-orders__title">Дата оформления</div>
+                        <div class="lk-orders__value">@order.AddedDate</div>
+                    </div>
+                    <div class="lk-orders__group">
+                        <div class="lk-orders__title">Статус заказа</div>
+                        <div class="lk-orders__value">@order.OrderStatusName</div>
+                    </div>
+                    <div class="lk-orders__group">
+                        <div class="lk-orders__title">Стоимость заказа</div>
+                        <div class="lk-orders__value">@order.TotalPrice руб.</div>
+                    </div>
+                    <div class="user-orders__btn-group">
+                        <a href="#open-modal-order" class="user-orders__btn orderMore" data-orderId="@order.Id" title="Подробнее о заказе">
+                            <i class="fas fa-info"></i>
+                        </a>
+                        @if (order.OrderStatusName == "Обрабатывается")
+                        {
+                            <a class="user-orders__btn user-orders__btn_cancel orderCancel" data-orderId="@order.Id" href="#open-modal-order" title="Отменить заказ">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        }
+                    </div>
+                </div>
+                <div class="lk-orders__divider"></div>
+            }
+        }
+
+
+    </div>
+    <!-- USER-PROFILE-MOBILE END -->
+
+    <div class="container user-profile-global">
+        <div class="row">
+            <div class="col-4">
+                <ul class="section-wrapper user-menu">
+                    <li class="user-menu__item"><a asp-controller="Account" asp-action="YourAccount" class="user-menu__link">Данные учетной записи</a></li>
+                    <li class="user-menu__item"><a asp-controller="Account" asp-action="YourOrders" class="user-menu__link">Мои заказы</a></li>
+                </ul>
+            </div>
+            <div class="col-8">
+                <div class="section-wrapper user-profile">
+                    <h3 class="user-profile__title">Мои заказы</h3>
+                    <table class="table table-bordered table-hover">
+                        <tr>
+                            <th>Номер заказа</th>
+                            <th>Дата оформления</th>
+                            <th>Стоимость заказа</th>
+                            <th>Статус заказа</th>
+                            <th>Действия</th>
+                        </tr>
+                        @foreach (var order in Model.OrderByDescending(m => m.AddedDate))
+                        {
+                            <tr style="
+                                @if (order.OrderStatusName == "Выполнен") {
+                                    @:background: rgba(153, 255, 153, 0.7);
+                                }
+                                else if (order.OrderStatusName == "Отменен") {
+                                    @:background: rgba(255, 102, 102, 0.7);
+                                }
+                            ">
+                                <td>@order.OrderNumber</td>
+                                <td>@order.AddedDate</td>
+                                <td>@order.TotalPrice руб.</td>
+                                <td>@order.OrderStatusName</td>
+                                <td>
+                                    <div class="user-orders__btn-group">
+                                        <a href="#open-modal-order" class="user-orders__btn orderMore" data-orderId="@order.Id" title="Подробнее о заказе">
+                                            <i class="fas fa-info"></i>
+                                        </a>
+                                        @if (order.OrderStatusName == "Обрабатывается")
+                                        {
+                                            <a class="user-orders__btn user-orders__btn_cancel orderCancel" data-orderId="@order.Id" href="#open-modal-order" title="Отменить заказ">
+                                                <i class="fas fa-times"></i>
+                                            </a>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- USER-PROFILE END -->
+
+@section Scripts {
+    <script>
+        $(document).on('click', '.orderMore', function () {
+            var orderId = $(this).attr("data-orderId");
+            $('#open-modal-order').load('@Url.Action("OrderInfo", "Order")?orderId=' + encodeURIComponent(orderId));
+            setTimeout(function () {
+                history.pushState(null, null, '/Account/YourOrders');
+            }, 1);
+        });
+        $(document).on('click', '.orderCancel', function () {
+            var orderId = $(this).attr("data-orderId");
+            $('#open-modal-order').load('@Url.Action("CancelOrder", "Account")?orderId=' + encodeURIComponent(orderId));
+            setTimeout(function () {
+                history.pushState(null, null, '/Account/YourOrders');
+            }, 1);
+        });
+    </script>
+}

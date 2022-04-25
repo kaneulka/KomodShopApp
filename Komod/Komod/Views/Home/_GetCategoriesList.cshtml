@@ -1,0 +1,41 @@
+﻿@using Komod.Web.Models.CategoryModels;
+@model List<CategoryViewModel>
+
+
+@foreach (var category in Model)
+{
+if (category.ParentId == null)
+{
+<li class="catalog-menu__item" data-parentId="@category.Id">
+    <a asp-controller="Home" asp-action="Catalog" asp-route-categoryId="@category.Id" class="catalog-menu__link">@category.Name</a>
+    <ul class="catalog-submenu"></ul>
+</li>
+}
+}
+
+
+
+<!--
+    <li class="catalog-menu__item"><a href="#" class="catalog-menu__link">Комплект постельного белья</a></li>
+    <li class="catalog-menu__item"><a href="#" class="catalog-menu__link">Мягкий инвентарь</a></li>
+    <li class="catalog-menu__item">
+        <a href="#" class="catalog-menu__link">Постельные принадлежности</a>
+        <i class="fas fa-angle-right dropbtn"></i>
+        <ul class="catalog-submenu">
+            <li class="catalog-submenu__item"><a href="#" class="catalog-submenu__link">Комплект постельного белья</a></li>
+            <li class="catalog-submenu__item"><a href="#" class="catalog-submenu__link">Мягкий инвентарь</a></li>
+            <li class="catalog-submenu__item"><a href="#" class="catalog-submenu__link">Постельные принадлежности</a></li>
+            <li class="catalog-submenu__item">
+                <a href="#" class="catalog-submenu__link">Простыни</a>
+                <i class="fas fa-angle-right dropbtn"></i>
+                <ul class="catalog-submenu">
+                    <li class="catalog-submenu__item"><a href="#" class="catalog-submenu__link">Комплект постельного белья</a></li>
+                    <li class="catalog-submenu__item"><a href="#" class="catalog-submenu__link">Мягкий инвентарь</a></li>
+                    <li class="catalog-submenu__item"><a href="#" class="catalog-submenu__link">Постельные принадлежности</a></li>
+                    <li class="catalog-submenu__item"><a href="#" class="catalog-submenu__link">Простыни</a></li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+    <li class="catalog-menu__item"><a href="#" class="catalog-menu__link">Простыни</a></li>
+    -->

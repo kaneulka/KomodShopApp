@@ -1,0 +1,23 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model Komod.Web.Models.UserModels.ChangeRoleViewModel
+@using Komod.Web.Models
+
+<form asp-action="EditUserRoles" role="form">
+    @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Изменение ролей для пользователя " + @Model.UserEmail })
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-12">
+                <input type="hidden" name="userId" value="@Model.UserId" />
+                @foreach (IdentityRole role in Model.AllRoles)
+                {
+                <div class="form-group form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" type="checkbox" name="roles" value="@role.Name" @(Model.UserRoles.Contains(role.Name) ? "checked=\"checked\"" : "") /> @role.Name
+                    </label>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+    @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
+</form>

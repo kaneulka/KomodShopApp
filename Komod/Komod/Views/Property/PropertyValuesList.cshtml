@@ -1,0 +1,87 @@
+﻿@model IEnumerable<PropertyValueViewModel>
+@using Komod.Web.Models.PropertyModels
+@using Komod.Web.Code
+@using Komod.Web.Models
+
+@{
+    var propertyId = ViewBag.propertyId;
+    ViewData["Title"] = "Значения свойств";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="fade-in">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <h1>Значения свойств</h1>
+                        <a asp-controller="Property" asp-action="Properties" class="btn btn-info btn-pill">Вернуться к свойствам</a>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-lg-2">
+                                <a id="createPropertyValueModal" data-toggle="modal" href="#" data-target="#modal-action-propertyValue" class="btn btn-pill btn-block btn-primary">
+                                    Добавить значение
+                                </a>
+                            </div>
+                        </div>
+                        <table class="table table-responsive-sm table-bordered table-striped table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Значение свойства</th>
+                                    <th>Действие</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var i in Model)
+                                {
+                                    <tr>
+                                        <td>@Html.DisplayFor(modelItem => i.Value)</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
+                                                    <a data-toggle="modal" href="#" data-id="@i.Id" data-propertyId="@propertyId" data-target="#modal-action-propertyValue" class="btn btn-info editPropertyValueModal">
+                                                        <i class="c-icon cil-pencil"></i>
+                                                    </a>
+                                                    <form asp-action="DeletePropertyValue" asp-controller="Property" method="post" id="deleteForm-@i.Id" style="display:none" asp-route-Id="@i.Id" enctype="multipart/form-data">
+                                                    </form>
+                                                    <a class="btn btn-danger" href="javascript:{}" onclick="document.getElementById('deleteForm-@i.Id').submit(); return false;">
+                                                        <i class="c-icon cil-trash"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer">
+                        <a asp-controller="Property" asp-action="Properties" class="btn btn-info btn-pill">Вернуться к свойствам</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-propertyValue", AreaLabeledId = "modal-action-propertyValue-label", Size = ModalSize.Large })
+
+@section scripts
+    {
+    <script type="text/javascript">
+        $('#createPropertyValueModal').click(function (e) {
+            e.preventDefault();
+            $('#modal-content').load('@Url.Action("AddPropertyValue", "Property")?propertyId=' + @propertyId);
+        });
+        $('.editPropertyValueModal').click(function (e) {
+            e.preventDefault();
+            var id = $(this).attr("data-id");
+            var propertyId = $(this).attr("data-propertyId");
+            propertyValueId = encodeURIComponent(id);
+            pId = encodeURIComponent(propertyId);
+            $('#modal-content').load('@Url.Action("EditPropertyValue", "Property")?id=' + propertyValueId + '&propertyId=' + pId);
+        });
+    </script>
+}

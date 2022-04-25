@@ -1,0 +1,79 @@
+﻿@model ArticleViewModel
+@using Komod.Web.Models.ProductModels
+@using Komod.Web.Models
+
+<form asp-action="EditArticle" asp-route-returnurl="@ViewBag.ReturnUrl" role="form" enctype="multipart/form-data">
+    @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Изменение артикула" })
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-12">
+                <input asp-for="Id" type="hidden" />
+                <input asp-for="ProductId" type="hidden" />
+                <div class="form-group">
+                    <span asp-validation-for="Name"></span><br />
+                    <label asp-for="Name"></label>
+                    <input asp-for="Name" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <span asp-validation-for="Price"></span><br />
+                    <label asp-for="Price"></label>
+                    <input id="decimalPrice" type="text" asp-for="Price" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="Quantity"></label>
+                    <input type="number" asp-for="Quantity" class="form-control" />
+                </div>
+                <select class="form-control" asp-for="ColorId">
+                    @foreach (var c in Model.Colors)
+                    {
+                        <option style="background:@c.ColorCode;" value="@c.Id">@c.Name</option>
+                    }
+                </select>
+                <div class="form-group">
+                    <label class="col-form-label">Выберите изображение для загрузки</label>
+                    <input class="ml-3" type="file" name="uploadedFile" />
+                </div>
+                <h3>Характеристики товара</h3>
+                <div class="form-group">
+                    <label>Название свойства</label>
+                    <select class="form-control" id="property-list">
+                        <option value="-1">Выберите свойство...</option>
+                        @foreach (var p in Model.AllProperties.OrderBy(pr => pr.Name))
+                        {
+                            <option value="@p.Id">@p.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Значение свойства</label>
+                    <select class="form-control" id="property-values-list">
+                        <option value="-1">Выберите значение...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <a href="#" class="btn btn-primary" id="add-property"><i class="c-icon cil-plus"></i></a>
+                </div>
+                <div class="propertiesList d-flex flex-wrap">
+                    @foreach (var property in Model.PropertyChecked.OrderBy(p => p.Name))
+                    {
+                        <div class="form-group ml-4 propertiesListFor" data-propertyId="@property.Id">
+                            <span><strong>@property.Name</strong></span>
+                            @foreach (var propertyValue in Model.PropertyValuesChecked.OrderBy(pv => pv.Value))
+                            {
+                                if (propertyValue.PropertyId == property.Id)
+                                {
+                                    <div class="form-check checkbox propertyValuesListFor" data-propValId="@propertyValue.Id" data-propValName="@propertyValue.Value" data-propValPropId="@propertyValue.PropertyId">
+                                        <input class="form-check-input" id="@propertyValue.Id" type="checkbox" name="propertyValues" value="@propertyValue.Id" checked="checked" />
+                                        <label class="form-check-label" for="@propertyValue.Id">@propertyValue.Value</label>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
+</form>
+

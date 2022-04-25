@@ -1,0 +1,323 @@
+﻿@model IEnumerable<ArticleViewModel>
+@using Komod.Web.Models.ProductModels
+@using Komod.Web.Code
+@using Komod.Web.Models
+
+@{
+    ViewData["Title"] = "Артикулы товара " + ViewBag.Product.Name;
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<div class="container-fluid">
+    <div class="fade-in">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <h1>Артикулы товара @ViewBag.Product.Name</h1>
+                        <a href="@ViewBag.ReturnUrl" class="btn btn-ghost-info btn-pill">Вернуться к продуктам</a>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-lg-2">
+                                <a id="createArticleModal" data-productId="@ViewBag.Product.Id" data-returnUrl="@ViewBag.ReturnUrl" data-toggle="modal" href="#" data-target="#modal-action-article" class="btn btn-pill btn-block btn-primary">
+                                    Добавить артикул
+                                </a>
+                            </div>
+                            <div class="col-lg-10 d-flex align-items-center">
+                                <form asp-action="DoDiscount" asp-controller="Product" asp-route-productId="@ViewBag.Product.Id" method="post" id="discountForm" class="form-inline">
+                                    <div class="form-group">
+                                        <input type="number" class="form-control" name="numberDiscount" value="" placeholder="% Скидки" />
+                                    </div>
+                                    <div class="form-check checkbox ml-3">
+                                        <input class="form-check-input" type="checkbox" name="isDiscountPrice" value="true" id="isDiscountPrice1" />
+                                        <label class="form-check-label" for="isDiscountPrice1">Передать цену со скидкой</label>
+                                    </div>
+                                    <div class="form-group ml-3">
+                                        <button type="submit" class="btn btn-success btn-pill">Отправить</button>
+                                    </div>
+                                </form>
+                                <form asp-action="DeleteDiscount" asp-controller="Product" asp-route-productId="@ViewBag.Product.Id" method="post">
+                                    <button type="submit" class="btn btn-danger btn-pill ml-3">Убрать скидку у всех артиклей</button>
+                                </form>
+                            </div>
+                        </div>
+                        <table class="table table-responsive-sm table-bordered table-striped table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Название</th>
+                                    <th>Изображение</th>
+                                    <th>Дата добавления</th>
+                                    <th>Дата изменения</th>
+                                    <th>Цена</th>
+                                    <th>Колличество</th>
+                                    <th>Действие</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                                        @if (item.ImagePath != null)
+                                        {
+                                            <td><img src="@item.ImagePath" alt="Alternate Text" width="100" /></td>
+                                        }
+                                        else
+                                        {
+                                            <td></td>
+                                        }
+                                        <td>@Html.DisplayFor(modelItem => item.AddedDate)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.ModifiedDate)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Price)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Quantity)</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
+                                                    <a data-toggle="modal" href="#" data-id="@item.Id" data-productId="@ViewBag.Product.Id" data-returnUrl="@ViewBag.ReturnUrl" data-target="#modal-action-article" class="btn btn-info editArticleModal">
+                                                        <i class="c-icon cil-pencil"></i>
+                                                    </a>
+                                                    <a data-toggle="modal" href="#" data-id="@item.Id" data-returnUrl="@ViewBag.ReturnUrl" data-target="#modal-action-article" class="btn btn-danger deleteArticleModal">
+                                                        <i class="c-icon cil-trash"></i>
+                                                    </a>
+                                                </div>@*
+        @if (item.DiscountPercent > 0)
+        {
+            <div class="form-check checkbox ml-2">
+                <input type="checkbox" checked="checked" class="form-check-input" form="discountForm" name="discounts" value="@item.Id">
+                <label class="form-check-label" for="isDiscountPrice1">Скидка</label>
+            </div>
+        }
+        else
+        {
+            <div class="form-check checkbox ml-2">
+                <input type="checkbox" class="form-check-input" form="discountForm" name="discounts" value="@item.Id">
+                <label class="form-check-label" for="isDiscountPrice1">Скидка</label>
+            </div>
+        }*@
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer">
+                        <a href="@ViewBag.ReturnUrl" class="btn btn-info btn-pill">Вернуться к продуктам</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-article", AreaLabeledId = "modal-action-article-label", Size = ModalSize.Large })
+
+@section scripts
+    {
+    <script>
+
+        var listPropertyValues = [];
+        var listProperties = [];
+
+        $(document).on('click', "#createArticleModal", function (e) {
+            e.preventDefault();
+            var product = $(this).attr("data-productId");
+            var returnu = $(this).attr("data-returnUrl");
+            productId = encodeURIComponent(product);
+            returnurl = encodeURIComponent(returnu);
+            $('#modal-content').load('@Url.Action("AddArticle", "Product")?productId=' + productId + '&returnurl=' + returnurl);
+        });
+        $(document).on('click', '.editArticleModal', function (e) {
+            e.preventDefault();
+            var article = $(this).attr("data-id");
+            var product = $(this).attr("data-productId");
+            var returnu = $(this).attr("data-returnUrl");
+            articleId = encodeURIComponent(article);
+            productId = encodeURIComponent(product);
+            returnurl = encodeURIComponent(returnu);
+            $('#modal-content').load('@Url.Action("EditArticle", "Product")?id=' + articleId + '&productId=' + productId + '&returnurl=' + returnurl);
+
+            setTimeout(function () {
+                var decimalPrice = $('#decimalPrice').val();
+                $('#decimalPrice').val(parseInt(decimalPrice,10));
+            }, 1000);
+        });
+        $('.deleteArticleModal').click(function (e) {
+            e.preventDefault();
+            var article = $(this).attr("data-id");
+            var returnu = $(this).attr("data-returnUrl");
+            articleId = encodeURIComponent(article);
+            returnurl = encodeURIComponent(returnu);
+            $('#modal-content').load('@Url.Action("DeleteArticle", "Product")?id=' + articleId + '&returnurl=' + returnurl);
+        });
+
+        function generateOptions(list) {
+            var options = '';
+            $.each(list, function (i, item) {
+                options += `<option value="` + item.Id + `">` + item.Value + `</option>`;
+            });
+
+            $("#property-values-list").html(options);
+        }
+
+        $(document).on('change', "#property-list", function () {
+            var propertyId = $(this).find('option:selected').val();
+            var url = '/Product/GetPropertyValues?propertyId=' + propertyId;
+            $.ajax({
+                type: "GET",
+                url: url,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    generateOptions(data);
+                },
+
+                failure: function (data) {
+                    alert(data.responseText);
+                },
+                error: function (data) {
+                    alert(data.responseText);
+                }
+
+            });
+        });
+
+        function initProperties() {
+            var properties = $('.propertiesListFor');
+            $.each(properties, function (i, item) {
+                var propId = item.dataset.propertyid;
+                if (!listProperties.includes(propId)) {
+                    listProperties.push(propId);
+                }
+            });
+            var propertyValueBlocks = $('.propertyValuesListFor');
+            $.each(propertyValueBlocks, function (i, item) {
+                var propValId = item.dataset.propvalid;
+                var propValName = item.dataset.propvalname;
+                var propId = item.dataset.propvalpropid;
+                var propertyValueObj = {};
+
+                propertyValueObj.Id = propValId;
+                propertyValueObj.Name = propValName;
+                propertyValueObj.PropertyId = propId;
+
+                if (!(listPropertyValues.some(pv => pv.Id === propertyValueObj.Id && pv.PropertyId === propertyValueObj.PropertyId))) {
+                    listPropertyValues.push(propertyValueObj);
+                }
+            });
+        }
+
+        function addProperty(propertyId, propertyName) {
+            var property = `<div class="form-group ml-4" data-propertyId="` + propertyId + `">
+                                <span><strong>` + propertyName + `</strong></span>
+                            </div>`;
+            $('.propertiesList').append(property);
+        }
+
+        function addPropertyValue(propertyValue) {
+            var propertyBlock = $('div[data-propertyId="' + propertyValue.PropertyId + '"]');
+
+            var propertyValueBlock = `<div class="form-check checkbox" data-pId="` + propertyValue.PropertyId + `" data-pvId="` + propertyValue.Id + `" data-pvName="` + propertyValue.Name + `">
+                                          <input class="form-check-input" id="` + propertyValue.Id + `" type="checkbox" name="propertyValues" value="` + propertyValue.Id + `" checked="checked"/>
+                                          <label class="form-check-label" for="` + propertyValue.Id + `">` + propertyValue.Name + `</label>
+                                      </div>`;
+            propertyBlock.append(propertyValueBlock);
+        }
+
+        $(document).on('click', "#add-property", function (e) {
+            e.preventDefault();
+            initProperties();
+            var propertyValueId = $('#property-values-list').find('option:selected').val();
+            var propertyValueName = $('#property-values-list').find('option:selected').text();
+            var propertyId = $('#property-list').find('option:selected').val();
+            var propertyName = $('#property-list').find('option:selected').text();
+            var propertyValue = {};
+            propertyValue.Id = propertyValueId;
+            propertyValue.Name = propertyValueName;
+            propertyValue.PropertyId = propertyId;
+
+            if (propertyValueId != "-1") {
+                if (!(listPropertyValues.some(pv => pv.Id === propertyValue.Id && pv.PropertyId === propertyValue.PropertyId))) {
+                    listPropertyValues.push(propertyValue);
+
+                    if (!listProperties.includes(propertyId)) {
+                        listProperties.push(propertyId);
+                        addProperty(propertyId, propertyName);
+                    }
+
+                    addPropertyValue(propertyValue)
+                }
+            }
+            
+        });
+
+        $(document).on('click', ".propertiesList label[class='form-check-label']", function () {
+            initProperties();
+            var checkbox = $(this).parent();
+            var pvsList = checkbox.parent();
+            var propertyValue = {};
+            var propertyValueId = checkbox.attr("data-propvalid");
+            var propertyId = checkbox.attr("data-propvalpropid");
+            var propertyValueName = checkbox.attr("data-propvalname");
+            propertyValue.Id = propertyValueId;
+            propertyValue.Name = propertyValueName;
+            propertyValue.PropertyId = propertyId;
+
+            var propertyIdValueIndex = listPropertyValues.findIndex(pv => pv.Id === propertyValue.Id && pv.Name === propertyValue.Name && pv.PropertyId === propertyValue.PropertyId);
+            listPropertyValues.splice(propertyIdValueIndex, 1);
+
+            checkbox.remove();
+
+            if (!(pvsList.children('.checkbox').length > 0)) {
+                var propertyIdIndex = listProperties.indexOf(propertyId);
+                listProperties.splice(propertyIdIndex, 1);
+
+                pvsList.remove();
+            }
+        });
+
+        $(document).on('click', ".propertiesList input[class='form-check-input']", function () {
+            initProperties();
+            var checkbox = $(this).parent();
+            var pvsList = checkbox.parent();
+            var propertyValue = {};
+            var propertyValueId = checkbox.attr("data-propvalid");
+            var propertyId = checkbox.attr("data-propvalpropid");
+            var propertyValueName = checkbox.attr("data-propvalname");
+            propertyValue.Id = propertyValueId;
+            propertyValue.Name = propertyValueName;
+            propertyValue.PropertyId = propertyId;
+
+            var propertyIdValueIndex = listPropertyValues.findIndex(pv => pv.Id === propertyValue.Id && pv.Name === propertyValue.Name && pv.PropertyId === propertyValue.PropertyId);
+            listPropertyValues.splice(propertyIdValueIndex, 1);
+
+            checkbox.remove();
+
+            if (!(pvsList.children('.checkbox').length > 0)) {
+                var propertyIdIndex = listProperties.indexOf(propertyId);
+                listProperties.splice(propertyIdIndex, 1);
+
+                pvsList.remove();
+            }
+        });
+
+        $(document).on('click', "*[data-dismiss='modal']", function () {
+            listPropertyValues = [];
+            listProperties = [];
+        });
+        $(document).on('click', "div[class='modal fade']", function () {
+            listPropertyValues = [];
+            listProperties = [];
+        });
+
+        @*function getval(id) {
+            if (id.value > 0) {
+                categoryId = encodeURIComponent(id.value);
+                $('.propertiesList').load('@Url.Action("PropertyList", "Product")?categoryId=' + categoryId);
+            }
+            else {
+                $('.propertiesList').html('');
+            }
+        }*@
+    </script>
+}

@@ -1,0 +1,259 @@
+﻿
+@{
+    ViewData["Title"] = "Корзина";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+
+    var cart = ViewBag.cart;
+    var dayOfWeek = DateTime.Now.DayOfWeek;
+    var cartSets = ViewBag.CartSets;
+}
+
+<section class="main-about-us" style="padding-top: 60px;">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="section-title">Корзина</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-wrapper cart-mobile">
+        @if (cart == null || cart.Count == 0)
+        {
+            <h3 style="font-size: 30px; text-align:center; margin: 30px 0; color:#212121">В корзине пока ничего нет.</h3>
+        }
+        else
+        {
+            @foreach (var item in cart)
+            {
+                <div class="cart-mobile-card">
+                    <div class="cart-mobile-card__group">
+                        <div class="cart-mobile-card__property">Артикул:</div>
+                        <div class="cart-mobile-card__value">@item.Article.Name</div>
+                    </div>
+                    <div class="cart-mobile-card__group">
+                        <div class="cart-mobile-card__property">Название:</div>
+                        <div class="cart-mobile-card__value">@item.Article.ProductName</div>
+                    </div>
+                    <div class="cart-mobile-card__group">
+                        <div class="cart-mobile-card__property">Цена за шт.:</div>
+                        <div class="cart-mobile-card__value">@item.Article.Price руб.</div>
+                    </div>
+                    <div class="cart-mobile-card__group">
+                        <div class="cart-mobile-card__property">Количество:</div>
+                        <div class="cart-mobile-card__value">
+                            <a asp-controller="Cart" asp-action="DecreaseArticleQuantity" asp-route-id="@item.Article.Id"><i class="fas fa-minus"></i></a>
+                            @item.ItemQuantity
+                            @if (!item.MaxQuantity)
+                            {
+                                <a asp-controller="Cart" asp-action="IncreaseArticleQuantity" asp-route-id="@item.Article.Id"><i class="fas fa-plus"></i></a>
+                            }
+                        </div>
+                    </div>
+                    <div class="cart-mobile-card__group">
+                        <div class="cart-mobile-card__property">Всего:</div>
+                        <div class="cart-mobile-card__value">@(item.Article.Price * item.ItemQuantity)</div>
+                    </div>
+                    <div class="cart-mobile-card__group">
+                        <div class="cart-mobile-card__property">Удалить:</div>
+                        <div class="cart-mobile-card__value"><a asp-controller="Cart" asp-action="Remove" asp-route-Id="@item.Article.Id" class="cart__delete"><i class="far fa-trash-alt"></i></a></div>
+                    </div>
+                </div>
+            }
+            @if (cart.Count > 0)
+            {
+                <div class="cart-mobile__total-price"><span>Итого:</span> @ViewBag.total</div>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <a asp-controller="Order" asp-action="OrderPage" class="cart-mobile__order">Оформить заказ</a>
+                }
+                else
+                {
+                    <span class="d-inline-block text-center mt-2 mb-2">Для дальнейшего оформления заказа <a href="#open-modal-window" class="cart__auth loginLink">авторизуйтесь</a> или <a href="#open-modal-window" class="cart__auth registerLink">зарегистрируйтесь.</a></span>
+                    <a href="#" class="cart-mobile__order" style="opacity: 0.5" disable>Оформить заказ</a>
+                }
+
+            }
+        }
+
+
+
+    </div>
+
+    <div class="section-wrapper cart">
+        <div class="container">
+            @if (!(cart == null || cart.Count == 0))
+            {
+                <div class="row">
+                    <div class="col-12">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Артикул</th>
+                                    <th>Название товара</th>
+                                    <th>Цена за шт.</th>
+                                    <th>Кол-во</th>
+                                    <th>Всего</th>
+                                    <th>Удалить</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (cart != null)
+                                {
+                                    @foreach (var item in cart)
+                                    {
+                                        <tr class="item">
+                                            <td class="item-name">@item.Article.Name</td>
+                                            <td>@item.Article.ProductName</td>
+                                            @if (item.DiscountPercent > 0 && dayOfWeek == item.DayOfWeek)
+                                            {
+                                                <td class="item-price-field">
+                                                    <span class="item-price item-price_w-dicount">@item.Article.Price</span>
+                                                    <span>@(item.Article.Price * (1 - item.DiscountPercent/100))</span>
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                <td class="item-price-field">
+                                                    <span class="item-price">@item.Article.Price</span>
+                                                </td>
+                                            }
+                                            <td>
+                                                <a asp-controller="Cart" asp-action="DecreaseArticleQuantity" asp-route-id="@item.Article.Id"><i class="fas fa-minus"></i></a>
+                                                <span class="item-count">@item.ItemQuantity</span>
+                                                @if (!item.MaxQuantity)
+                                                {
+                                                    <a asp-controller="Cart" asp-action="IncreaseArticleQuantity" asp-route-id="@item.Article.Id"><i class="fas fa-plus"></i></a>
+                                                }
+                                            </td>
+                                            <td class="total-item-price">@(item.Article.Price * item.ItemQuantity)</td>
+                                            <td><a asp-controller="Cart" asp-action="Remove" asp-route-Id="@item.Article.Id" class="cart__delete"><i class="far fa-trash-alt"></i></a></td>
+                                        </tr>
+                                    }
+                                }
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td colspan="2" class="cart__all-price">Скидка</td>
+                                    <td id="totalDiscount">0 руб.</td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td colspan="2" class="cart__all-price">Итого к оплате</td>
+                                    <td id="total-items-price" data-price="@ViewBag.total">@ViewBag.total руб.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="promocode">
+                            <span class="promocode__error" id="promocodeError"></span>
+                            <input type="text" class="promocode__input" placeholder="Промокод" id="promocodeInput" />
+                            <a href="#" class="promocode__btn" id="promocodeBtn">Подтвердить</a>
+                            <span class="promocode__confirm" id="promocodeConfirm"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        @if (cart != null)
+                        {
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <a asp-controller="Order" asp-action="OrderPage" class="cart__order" id="place-your-order">Оформить заказ</a>
+                            }
+                            else
+                            {
+                                <div class="cart__group d-flex justify-content-end align-items-center">
+                                    <span>Для дальнейшего оформления заказа <a href="#open-modal-window" class="cart__auth loginLink">авторизуйтесь</a> или <a href="#open-modal-window" class="cart__auth registerLink">зарегистрируйтесь.</a></span>
+                                    <a href="#" class="cart__order cart__order_disabled" id="place-your-order">Оформить заказ</a>
+                                </div>
+                            }
+
+                        }
+                    </div>
+                </div>
+            }
+            @if (cart == null || cart.Count == 0)
+            {
+                <h3 style="color: #212121">В корзине пока ничего нет.</h3>
+            }
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+
+        var promocodeData = [];
+        var items = $('.item');
+        var totalDiscountPrice = 0;
+        var totalItemsPrice = parseInt($('#total-items-price').attr("data-price"));
+
+
+        function requestPromocode(url) {
+            $.ajax({
+                type: "GET",
+                url: url,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    if (typeof data === 'string') {
+                        $('#promocodeError').html(data);
+                    }
+                    else {
+                        promocodeData = data;
+                        generateArticlePrice();
+                    }
+                },
+                failure: function (data) {
+                    alert(data.responseText);
+                },
+                error: function (data) {
+                    alert(data.responseText);
+                }
+            });
+        }
+
+        function generateArticlePrice() {
+            for (var i = 0; i < promocodeData.articleNames.length; i++) {
+                items.each(function () {
+                    if (promocodeData.articleNames[i] === $(this).find('.item-name')[0].innerText) {
+                        var itemCount = parseInt($(this).find('.item-count')[0].innerText, 10)
+                        var priceWithDiscount = parseFloat($(this).find('.item-price')[0].innerText) * (1 - parseInt(promocodeData.promocode.discountPercent, 10) / 100);
+                        $(this).find('.item-price')[0].classList.add("item-price_w-dicount");
+                        $(this).find('.item-price-field').append("<span>" + priceWithDiscount.toFixed(0) + ",00</span>");
+
+                        $(this).find('.total-item-price').html((priceWithDiscount * itemCount).toFixed(0));
+
+                        totalDiscountPrice += (parseFloat($(this).find('.item-price')[0].innerText) * (parseInt(promocodeData.promocode.discountPercent) / 100)) * itemCount;;
+                    }
+                });
+            }
+            $("#totalDiscount").html(totalDiscountPrice.toFixed(0) + ",00 руб.");
+            $('#total-items-price').html(totalItemsPrice - totalDiscountPrice.toFixed(0) + ",00 руб.");
+
+            $('#promocodeConfirm').html(`Применен промокод ${promocodeData.promocode.promocodeName}`);
+            $('#promocodeInput').val("");
+        }
+
+        $(document).ready(function () {
+
+            var promocodeBtn = $('#promocodeBtn');
+            var promocode = "";
+            var url = "";
+
+            promocodeBtn.on('click', function (e) {
+                e.preventDefault();
+                promocode = $('#promocodeInput').val();
+                url = "/Cart/GetPromosArticles?promocodeName=" + encodeURIComponent(promocode);
+                requestPromocode(url);
+            });
+
+        });
+
+        
+    </script>
+}

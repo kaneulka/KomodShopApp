@@ -1,0 +1,101 @@
+﻿@model RolesViewModel
+@using Komod.Web.Models.UserModels
+@using Komod.Web.Code
+@using Komod.Web.Models
+
+@{
+    ViewData["Title"] = "Роли";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="fade-in">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-header"><h1>Роли</h1></div>
+                    <div class="card-body">
+                        <div class="row mb-2">
+                            <div class="col-lg-3">
+                                <a id="createRoleModal" data-toggle="modal" href="#" data-target="#modal-action-role" class="btn btn-pill btn-block btn-primary">
+                                    Добавить роль
+                                </a>
+                            </div>
+                            <div class="col-lg-9">
+                                <form asp-controller="Role" asp-action="Roles" method="get" class="form-inline">
+                                    <div class="form-group mb-0 mr-3">
+                                        <select name="sortType" id="sortType" class="form-control" data-sortType="@ViewBag.SortType">
+                                            <option id="sortType-0" value="0">По названию</option>
+                                            <option id="sortType-1" value="1">По названию (в обратном порядке)</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group mb-0">
+                                        <input type="text" name="searchString" class="form-control mr-3 inputSearch" placeholder="Поиск..." />
+                                        <button type="submit" class="btn btn-dark btn-pill btn-sm btnSearch">
+                                            <i class="c-icon cil-search"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <table class="table table-responsive-sm table-bordered table-striped table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Название</th>
+                                    <th>Действие</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Roles)
+                                {
+                                    <tr>
+                                        <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
+                                                <a data-toggle="modal" href="#" data-id="@item.Id" data-target="#modal-action-role" class="btn btn-danger deleteRoleModal">
+                                                    <i class="c-icon cil-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-role", AreaLabeledId = "modal-action-role-label", Size = ModalSize.Large })
+
+@section scripts
+    {
+    <script>
+        $('#createRoleModal').click(function (e) {
+            e.preventDefault();
+            $('#modal-content').load('@Url.Action("AddRole", "Role")');
+        });
+        $('.deleteRoleModal').click(function (e) {
+            e.preventDefault();
+            var roleId = $(this).attr("data-id");
+            name = encodeURIComponent(roleId);
+            $('#modal-content').load('@Url.Action("DeleteRole", "Role")?id=' + roleId);
+        });
+
+        var sortType = $('#sortType').attr("data-sortType");
+
+        switch (sortType) {
+            case "0":
+                $('#sortType-0').attr("selected", "selected");
+                break;
+            case "1":
+                $('#sortType-1').attr("selected", "selected");
+                break;
+        }
+    </script>
+}
+

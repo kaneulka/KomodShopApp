@@ -1,0 +1,21 @@
+﻿@model Order
+@using Komod.Data
+@using Komod.Web.Models
+
+<form asp-action="ChangeDeliveryPrice" role="form">
+    @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Добавление производителя" })
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-12">
+                <input asp-for="Id" />
+                <div class="form-group">
+                    <span asp-validation-for="DeliveryPrice"></span><br />
+                    <label asp-for="DeliveryPrice"></label>
+                    <input asp-for="DeliveryPrice" class="form-control" />
+                </div>
+            </div>
+        </div>
+    </div>
+    @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
+</form>
+

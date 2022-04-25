@@ -1,0 +1,21 @@
+﻿@model PropertyValueViewModel
+@using Komod.Web.Models.PropertyModels
+@using Komod.Web.Models
+
+<form asp-action="AddPropertyValue" role="form">
+    @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Добавление свойства" })
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-12">
+                <input asp-for="PropertyId" />
+                <div class="form-group">
+                    <span asp-validation-for="Value"></span><br />
+                    <label asp-for="Value"></label>
+                    <input asp-for="Value" class="form-control" />
+                </div>
+            </div>
+        </div>
+    </div>
+    @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
+</form>
+
